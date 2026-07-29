@@ -1,7 +1,8 @@
 # Euro Banknote Design Proposals — Viewer
 
 A single-file HTML viewer for the ten design proposals (A–J) that the European Central Bank
-published for the future euro banknote series.
+published for the future euro banknote series — browse them, compare them side by side, and vote
+your way to a personal favourite.
 
 **Live version: <https://felixfischer.github.io/euro-banknote-proposals/>**
 
@@ -10,7 +11,8 @@ published for the future euro banknote series.
 **This is a frontend, nothing more.** The designs, the images and every idea in them belong to
 their creators. This repository exists only because comparing the proposals on the official page
 means a lot of scrolling and clicking, and I wanted to see all six denominations — front and back —
-of one proposal at a glance.
+of one proposal at a glance. Then it turned out that seeing all ten is easy but *choosing* between
+them is not, which is where the contest came from.
 
 ## What it does
 
@@ -42,9 +44,24 @@ If a local file is missing, the viewer transparently falls back to loading that 
 `ecb.europa.eu`, so `index.html` also works entirely on its own — it just depends on the ECB keeping
 those URLs alive.
 
-Opening `index.html?selftest` runs the contest's sort logic against an alphabetical oracle over
-every permutation of five candidates and logs `merge selftest ok` to the console — it asserts the
-result is fully sorted, that no pair is ever asked twice, and that the run terminates.
+## The contest
+
+Ten proposals are too many to judge at once, but two are easy. The **Contest** tab shows two
+proposals at the same denomination — front and back of each — and you pick one. Repeat until a
+ranking from 1 to 10 falls out.
+
+The pairings are not random and there is no bracket: a **merge sort** asks the questions. That
+means it only ever asks comparisons it actually needs (about 23 for ten proposals), never asks the
+same pair twice, ends by itself, and produces a complete ranking rather than just a winner. The
+denomination rotates from one comparison to the next, so a single run walks past every note.
+
+Nothing is sent anywhere. The run in progress and the final ranking live in `localStorage`, so
+closing the tab mid-contest loses nothing. A finished ranking is shareable because the ten letters
+*are* the result: `#contest=FADCBEGHIJ` needs no server and no database to resolve.
+
+Opening `index.html?selftest` runs that sort against an alphabetical oracle over every permutation
+of five candidates and logs `merge selftest ok` to the console — it asserts the result is fully
+sorted, that no pair is ever asked twice, and that the run terminates.
 
 ## Deploying
 
