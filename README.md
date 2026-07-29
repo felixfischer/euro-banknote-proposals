@@ -3,6 +3,10 @@
 A single-file HTML viewer for the ten design proposals (A–J) that the European Central Bank
 published for the future euro banknote series.
 
+**Live version: <https://felixfischer.github.io/euro-banknote-proposals/>**
+
+[![The viewer showing all six denominations of one proposal](screenshot.jpg)](https://felixfischer.github.io/euro-banknote-proposals/)
+
 **This is a frontend, nothing more.** The designs, the images and every idea in them belong to
 their creators. This repository exists only because comparing the proposals on the official page
 means a lot of scrolling and clicking, and I wanted to see all six denominations — front and back —
@@ -55,7 +59,8 @@ and pull-request previews are enabled.
 `.github/workflows/pages.yml` builds and publishes on every push to `main`. Enable it once under
 **Settings → Pages → Source → GitHub Actions**. The workflow caches the downloaded images between
 runs, so only the first deploy pays the download cost. Relative paths mean the project-subpath URL
-(`https://<user>.github.io/<repo>/`) works without extra configuration.
+(`https://<user>.github.io/<repo>/`) works without extra configuration — this is how the live
+version at <https://felixfischer.github.io/euro-banknote-proposals/> is published.
 
 ### Anything else
 

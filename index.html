@@ -9,6 +9,21 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="New Euro Banknotes – ECB design proposals">
 <meta property="og:description" content="All denominations of each proposal, front and back, at a glance.">
+<meta property="og:site_name" content="Euro Banknote Design Proposals">
+<meta property="og:locale" content="en">
+<!-- Social preview: absolute URLs are required, relative ones are not resolved by crawlers. -->
+<meta property="og:url" content="https://felixfischer.github.io/euro-banknote-proposals/">
+<meta property="og:image" content="https://felixfischer.github.io/euro-banknote-proposals/screenshot.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="720">
+<meta property="og:image:alt" content="The viewer showing all six denominations of one design proposal, front and back.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="New Euro Banknotes – ECB design proposals">
+<meta name="twitter:description" content="All denominations of each proposal, front and back, at a glance.">
+<meta name="twitter:image" content="https://felixfischer.github.io/euro-banknote-proposals/screenshot.jpg">
+<meta name="twitter:image:alt" content="The viewer showing all six denominations of one design proposal, front and back.">
+<link rel="canonical" href="https://felixfischer.github.io/euro-banknote-proposals/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💶</text></svg>">
 <style>
   :root{
@@ -60,18 +75,30 @@
   .pair{display:flex; gap:6px; padding:6px; background:var(--panel-2)}
   .pair.h{flex-direction:column}   /* landscape note -> sides stacked      */
   .pair.v{flex-direction:row}      /* portrait note  -> sides side by side */
-  .pane{position:relative; flex:1 1 0; min-width:0; display:flex}
+  /* Every pane carries the aspect ratio of the note AS DISPLAYED, in --ar and
+     aspect-ratio. Sizing one axis is then enough, in any of the layouts below. */
+  .pane{position:relative; flex:1 1 0; min-width:0; display:block}
   .pane img{width:100%; height:auto; display:block; border-radius:4px;
             cursor:zoom-in; background:#fff}
   /* Proposal D's reverse images are served landscape although the design is portrait
-     (no EXIF orientation flag). Rotate them 90 deg CW in the layout. --r = natural w/h. */
-  .pane.rot{display:block}
-  .pane.rot img{position:absolute; top:0; left:0; width:calc(100% * var(--r)); height:auto;
+     (no EXIF orientation flag). Rotate them 90 deg CW in the layout: the image is laid
+     out as wide as the pane is tall, then turned onto its corner. */
+  .pane.rot img{position:absolute; top:0; left:0; width:calc(100% / var(--ar)); height:auto;
                 max-width:none; transform-origin:0 0; transform:rotate(90deg) translateY(-100%)}
   .pane .lbl{position:absolute; left:7px; top:7px; font-size:10px; letter-spacing:.6px;
              text-transform:uppercase; background:rgba(0,0,0,.6); color:#fff;
              padding:2px 7px; border-radius:99px; opacity:0; transition:.15s; pointer-events:none}
   .pane:hover .lbl{opacity:1}
+
+  /* Compare view: every card is a square, so a note is rendered at the same
+     scale whether its design is landscape or portrait (long edge = the square
+     side minus padding and gap, in both cases). Keeps the grid rows even too. */
+  .grid.cmp .pair{aspect-ratio:1; align-items:center; justify-content:center}
+  .grid.cmp .pane{flex:0 0 auto}
+  .grid.cmp .pair.two.h .pane{height:calc((100% - 6px)/2); width:auto}   /* stacked  */
+  .grid.cmp .pair.two.v .pane{width:calc((100% - 6px)/2)}                /* alongside */
+  /* single side: fit the note into the square by its longer edge */
+  .grid.cmp .pair.one .pane{width:calc(100% * min(1, var(--ar,1)))}
 
   figcaption{padding:8px 12px; display:flex; justify-content:space-between;
              align-items:baseline; gap:8px; border-top:1px solid var(--line)}
@@ -196,15 +223,11 @@ function pane(L,d,side){
   // Detect it from the decoded size and rotate in the layout instead of touching the file.
   img.onload = () => {
     const nw = img.naturalWidth, nh = img.naturalHeight;
-    const needsRotation = PORTRAIT.has(L) && nw > nh;
-    p.classList.toggle("rot", needsRotation);
-    if(needsRotation){
-      p.style.setProperty("--r", nw / nh);
-      p.style.aspectRatio = `${nh} / ${nw}`;
-    }else{
-      p.style.removeProperty("--r");
-      p.style.aspectRatio = "";
-    }
+    const rot = PORTRAIT.has(L) && nw > nh;
+    const dw = rot ? nh : nw, dh = rot ? nw : nh;   // dimensions as displayed
+    p.classList.toggle("rot", rot);
+    p.style.setProperty("--ar", dw / dh);
+    p.style.aspectRatio = `${dw} / ${dh}`;
   };
   img.src = localPath(L,d,side);
   img.onclick = () => openLB(img);
@@ -218,9 +241,9 @@ function pane(L,d,side){
 function noteBox(L,d,filter){
   const fig = document.createElement("figure");
   const pair = document.createElement("div");
-  pair.className = "pair " + (PORTRAIT.has(L) ? "v" : "h");
-  SIDES.filter(s => filter === "all" || filter === s)
-       .forEach(s => pair.appendChild(pane(L,d,s)));
+  const shown = SIDES.filter(s => filter === "all" || filter === s);
+  pair.className = `pair ${PORTRAIT.has(L) ? "v" : "h"} ${shown.length === 2 ? "two" : "one"}`;
+  shown.forEach(s => pair.appendChild(pane(L,d,s)));
 
   const cap = document.createElement("figcaption");
   cap.innerHTML = `<b>€${d}</b><b>${L}</b>`;
@@ -232,6 +255,7 @@ function show(key){
   current = key;
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.k === key));
   grid.innerHTML = ""; meta.innerHTML = "";
+  grid.classList.toggle("cmp", key === "cmp");
   const f = $("#filter").value;
 
   if(key === "cmp"){
