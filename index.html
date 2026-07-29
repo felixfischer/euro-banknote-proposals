@@ -143,6 +143,11 @@
   /* Keyboard shortcuts are noise without a keyboard. Keyed to the pointer, not the
      viewport: a small laptop window has one, a large tablet does not. */
   @media (hover:none) and (pointer:coarse){ .keys{display:none} }
+  /* The size slider only moves anything while the grid can fit more than one column,
+     so it goes by width, not by pointer. Two 360px cards plus the gap and main's padding
+     need 736px of content width, i.e. a 768px viewport once main's 32px padding is counted.
+     Below that the grid is single-column at the default card size and the slider is inert. */
+  @media (max-width:767px){ .ctl.size{display:none} }
   kbd{background:var(--panel-2); border:1px solid var(--line); border-bottom-width:2px;
       border-radius:5px; padding:1px 5px; font:12px/1.4 ui-monospace,monospace}
 </style>
@@ -161,7 +166,7 @@
         <option value="back">back only</option>
       </select>
     </label>
-    <label class="ctl">Size
+    <label class="ctl size">Size
       <input type="range" id="size" min="200" max="760" step="20" value="360">
     </label>
   </div>
