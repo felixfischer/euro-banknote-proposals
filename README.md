@@ -17,8 +17,14 @@ of one proposal at a glance.
 - All six denominations (€5–€200) of a proposal on one screen, front and back paired in one box
 - Layout follows the artwork: landscape designs stack the two sides vertically, portrait designs
   (**D, G, I, J**) place them side by side
-- Switch proposals with the tabs, the arrow keys, or by pressing `A`–`J`
+- Switch proposals with the tabs, the arrow keys, or by pressing `A`–`J`; `0` opens Compare,
+  `9` opens Contest, and `1`/`2` vote inside a contest
 - **Compare** view: the same denomination across all ten proposals at once
+- **Contest** view: vote on pairs of proposals until a personal ranking 1–10 emerges. A merge
+  sort picks the pairings, so it asks only the comparisons it actually needs — about 23 votes
+  for ten proposals, none of them redundant. Your votes never leave the browser: progress and
+  result live in `localStorage`, and the result link (`#contest=…`) encodes the ranking itself,
+  so sharing it needs no server
 - Filter to front or back only, adjustable card size, click any note for a full-size view
 - No build tooling, no dependencies, no tracking — one `index.html` that also runs straight from
   the local filesystem
@@ -35,6 +41,10 @@ Images land in `images/<PROPOSAL>/<PROPOSAL>-<denomination>-<side>.jpg`, e.g. `i
 If a local file is missing, the viewer transparently falls back to loading that image directly from
 `ecb.europa.eu`, so `index.html` also works entirely on its own — it just depends on the ECB keeping
 those URLs alive.
+
+Opening `index.html?selftest` runs the contest's sort logic against an alphabetical oracle over
+every permutation of five candidates and logs `merge selftest ok` to the console — it asserts the
+result is fully sorted, that no pair is ever asked twice, and that the run terminates.
 
 ## Deploying
 

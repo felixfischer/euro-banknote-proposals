@@ -104,6 +104,30 @@
              align-items:baseline; gap:8px; border-top:1px solid var(--line)}
   figcaption b{font-size:16px; font-weight:650}
 
+  /* Contest: two candidates side by side, each a normal note box plus a vote button.
+     Below 700px they stack, so a note is never squeezed to thumbnail size on a phone. */
+  .grid.contest{grid-template-columns:repeat(2,1fr); max-width:1100px; margin:0 auto}
+  @media (max-width:700px){ .grid.contest{grid-template-columns:1fr} }
+  .grid.contest figcaption{flex-direction:column; align-items:stretch; gap:8px}
+  .vote{appearance:none; border:1px solid var(--accent); background:var(--accent); color:#fff;
+        border-radius:8px; padding:9px 14px; font:650 14px/1 system-ui; cursor:pointer;
+        width:100%; transition:.12s}
+  .vote:hover{filter:brightness(1.1)}
+  .vote small{font-weight:400; opacity:.8}
+
+  .grid.rank{grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); max-width:1100px; margin:0 auto}
+  .grid.rank figure{position:relative}
+  .grid.rank .pos{position:absolute; left:8px; top:8px; z-index:2; min-width:24px; height:24px;
+                  display:grid; place-items:center; padding:0 6px; border-radius:99px;
+                  background:var(--panel); border:1px solid var(--line);
+                  font:650 13px/1 system-ui; color:var(--fg-dim)}
+  .grid.rank figure.first{outline:2px solid var(--accent-2); outline-offset:-1px}
+  .grid.rank figure.first .pos{background:var(--accent-2); border-color:var(--accent-2); color:#1a1d23}
+  .btnrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .btn{appearance:none; border:1px solid var(--line); background:var(--panel-2); color:var(--fg);
+       border-radius:8px; padding:7px 12px; font:inherit; font-size:13px; cursor:pointer}
+  .btn:hover{border-color:var(--accent); color:var(--accent)}
+
   #lightbox{position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.93);
             display:none; align-items:center; justify-content:center; flex-direction:column;
             gap:12px; padding:24px}
@@ -145,7 +169,9 @@
   <div class="grid" id="grid"></div>
   <p class="hint">
     <kbd>←</kbd> <kbd>→</kbd> switch proposal · <kbd>A</kbd>–<kbd>J</kbd> jump directly · <kbd>0</kbd> compare view ·
-    click an image for the full-size view, <kbd>Esc</kbd> closes it.<br>
+    <kbd>9</kbd> contest · click an image for the full-size view, <kbd>Esc</kbd> closes it.<br>
+    <b>Contest</b> finds your favourite by pairwise votes; your votes stay in this browser
+    and are sent nowhere.<br>
     Images are loaded from <code>images/&lt;proposal&gt;/</code>; if a file is missing it is fetched
     straight from ecb.europa.eu instead.<br>
     An independent viewer, not affiliated with or endorsed by the ECB. The designs are the work of
@@ -204,6 +230,11 @@ function buildNav(){
   c.title = "Compare all proposals";
   c.onclick = () => show("cmp");
   nav.appendChild(c);
+  const t = document.createElement("button");
+  t.className = "tab wide"; t.textContent = "Contest"; t.dataset.k = "contest";
+  t.title = "Find your favourite by voting on pairs";
+  t.onclick = () => show("contest");
+  nav.appendChild(t);
 }
 
 function pane(L,d,side){
@@ -256,7 +287,10 @@ function show(key){
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.k === key));
   grid.innerHTML = ""; meta.innerHTML = "";
   grid.classList.toggle("cmp", key === "cmp");
+  grid.classList.remove("contest", "rank");
   const f = $("#filter").value;
+
+  if(key === "contest") return showContest();
 
   if(key === "cmp"){
     meta.innerHTML = `<h2>All proposals side by side</h2>
@@ -278,6 +312,176 @@ function show(key){
   DENOMS.forEach(d => grid.appendChild(noteBox(key, d, f)));
 }
 
+/* ---------------------------------------------------------------- contest ----
+   Bottom-up merge sort driven by the user. The algorithm decides which pair to
+   ask about, so no comparison is ever redundant and the run ends by itself after
+   ~22 votes for ten proposals. The full ranking is a by-product of sorting.
+   State is plain arrays and integers, so it serialises to localStorage as is. */
+
+const CKEY = "contest", RKEY = "contestResult";
+
+// runs: sorted runs still to be merged. a/b: the two runs being merged right now,
+// out: what has been merged of them. Head of a vs head of b is the open question.
+function newContest(){
+  const pool = LETTERS.slice();
+  for(let i = pool.length - 1; i > 0; i--){          // Fisher-Yates: the initial
+    const j = Math.floor(Math.random() * (i + 1));   // pairing shouldn't be alphabetical
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return settle({ runs: pool.map(l => [l]), a:null, b:null, out:[], votes:0 });
+}
+
+// Advance to a state that has an open question, or to a finished sort.
+function settle(c){
+  for(;;){
+    if(c.a){
+      if(c.a.length && c.b.length) return c;                  // a real question
+      c.runs.push(c.out.concat(c.a, c.b));                    // one side exhausted
+      c.a = c.b = null; c.out = [];
+    }
+    if(c.runs.length < 2) return c;                           // done
+    c.a = c.runs.shift(); c.b = c.runs.shift(); c.out = [];
+  }
+}
+const cPair = c => c.a && c.a.length && c.b.length ? [c.a[0], c.b[0]] : null;
+const cDone = c => !cPair(c) && c.runs.length === 1;
+// Upper bound n*ceil(log2 n); good enough for "vote 7 of ~40".
+const cTotal = n => n * Math.ceil(Math.log2(n));
+
+function cVote(c, winner){
+  const from = c.a[0] === winner ? c.a : c.b;
+  c.out.push(from.shift());
+  c.votes++;
+  return settle(c);
+}
+
+let contest = null;
+const cSave = () => { try{
+  if(contest) localStorage.setItem(CKEY, JSON.stringify(contest));
+}catch(e){} };
+const cLoad = () => { try{
+  const s = localStorage.getItem(CKEY);
+  return s ? settle(JSON.parse(s)) : null;
+}catch(e){ return null; } };
+const cClear = () => { try{ localStorage.removeItem(CKEY); }catch(e){} };
+const saveResult = r => { try{ localStorage.setItem(RKEY, r.join("")); }catch(e){} };
+
+// A ranking shared via #contest=FADC… — shown instead of your own, until you start a run.
+function sharedRanking(){
+  const m = /[#&]contest=([A-J]{10})/.exec(location.hash);
+  if(!m) return null;
+  const r = m[1].split("");
+  return new Set(r).size === LETTERS.length ? r : null;   // ignore malformed codes
+}
+
+function voteButton(L, other, nth){
+  const b = document.createElement("button");
+  b.className = "vote";
+  b.innerHTML = `Choose ${L} <small>(${nth})</small>`;
+  b.onclick = () => { contest = cVote(contest, L); cSave(); show("contest"); };
+  b.title = `Prefer proposal ${L} over ${other}`;
+  return b;
+}
+
+function showRanking(rank, shared){
+  const first = rank[0];
+  meta.innerHTML = `<h2>${shared ? "A shared ranking" : "Your ranking"}
+      <span class="badge">${PROPOSALS[first].theme}</span></h2>
+    <p>${shared ? "Someone else's result, read from the link." :
+        "Ranked from your " + contestVotes + " comparisons."}
+       Winner: <strong>proposal ${first}</strong>${PROPOSALS[first].designer ?
+        " · " + PROPOSALS[first].designer : ""}.</p>
+    <div class="btnrow">
+      <button class="btn" id="cAgain">${shared ? "Run my own contest" : "Run it again"}</button>
+      ${shared ? "" : `<button class="btn" id="cShare">Copy result link</button>`}
+    </div>`;
+  $("#cAgain").onclick = () => {
+    history.replaceState(null, "", location.pathname + location.search);
+    contest = newContest(); contestVotes = 0; cSave(); show("contest");
+  };
+  if(!shared) $("#cShare").onclick = async e => {
+    const url = location.origin === "null" ? location.href.split("#")[0] + "#contest=" + rank.join("")
+              : location.origin + location.pathname + "#contest=" + rank.join("");
+    try{ await navigator.clipboard.writeText(url); e.target.textContent = "Link copied"; }
+    catch(err){ location.hash = "contest=" + rank.join(""); e.target.textContent = "Link in address bar"; }
+  };
+
+  grid.classList.add("rank");
+  rank.forEach((L,i) => {
+    const fig = noteBox(L, 5, "front");
+    if(i === 0) fig.classList.add("first");
+    const pos = document.createElement("span");
+    pos.className = "pos"; pos.textContent = "#" + (i+1);
+    fig.prepend(pos);
+    fig.querySelector("figcaption").innerHTML = `<b>${L}</b><b>#${i+1}</b>`;
+    grid.appendChild(fig);
+  });
+}
+
+let contestVotes = 0;   // kept separately: a resumed run reports its own count
+
+function showContest(){
+  const shared = sharedRanking();
+  if(shared) return showRanking(shared, true);
+
+  if(!contest) contest = cLoad() || newContest();
+  contestVotes = contest.votes;
+  const pair = cPair(contest);
+
+  if(!pair){
+    const rank = contest.runs[0];
+    saveResult(rank); cClear();
+    return showRanking(rank, false);
+  }
+
+  const n = LETTERS.length, total = cTotal(n);
+  // Rotate the denomination so a full run shows every note, without another control.
+  const d = DENOMS[contest.votes % DENOMS.length];
+  meta.innerHTML = `<h2>Which one do you prefer?</h2>
+    <p>Comparison ${contest.votes + 1} of at most ${total} · shown at €${d} ·
+       <kbd>1</kbd>/<kbd>2</kbd> to vote
+    <span class="btnrow" style="display:inline-flex;margin:0 0 0 10px">
+      <button class="btn" id="cReset">Start over</button>
+    </span></p>`;
+  $("#cReset").onclick = () => { contest = newContest(); cSave(); show("contest"); };
+
+  grid.classList.add("contest");
+  pair.forEach((L,i) => {
+    const fig = noteBox(L, d, "all");
+    const cap = fig.querySelector("figcaption");
+    cap.innerHTML = `<b>€${d} · ${L}</b>`;
+    cap.appendChild(voteButton(L, pair[1-i], i+1));
+    grid.appendChild(fig);
+  });
+}
+
+/* Self-check: drive the sort with an alphabetical oracle over every permutation of
+   five letters. The result must be sorted and no pair may be asked twice.
+   Run with ?selftest — never in the normal path. */
+function selftest(){
+  const perms = (a) => a.length < 2 ? [a] :
+    a.flatMap((x,i) => perms([...a.slice(0,i), ...a.slice(i+1)]).map(p => [x, ...p]));
+  let runs = 0;
+  for(const p of perms(["A","B","C","D","E"])){
+    let c = settle({ runs: p.map(l => [l]), a:null, b:null, out:[], votes:0 });
+    const seen = new Set();
+    let pair, guard = 0;
+    while((pair = cPair(c))){
+      const k = pair.slice().sort().join("");
+      console.assert(!seen.has(k), "pair asked twice", p.join(""), k);
+      seen.add(k);
+      c = cVote(c, pair[0] < pair[1] ? pair[0] : pair[1]);   // oracle: alphabetical wins
+      console.assert(++guard < 100, "no termination", p.join(""));
+    }
+    console.assert(cDone(c), "not finished", p.join(""));
+    console.assert(c.runs[0].join("") === "ABCDE", "not sorted", p.join(""), c.runs[0].join(""));
+    console.assert(c.votes <= cTotal(5), "too many votes", c.votes);
+    runs++;
+  }
+  console.log(`merge selftest ok (${runs} permutations)`);
+}
+if(location.search.includes("selftest")) selftest();
+
 /* lightbox */
 const lb = $("#lightbox"), lbImg = $("#lbImg"), lbCap = $("#lbCap");
 function openLB(img){
@@ -297,16 +501,27 @@ $("#size").oninput = e => document.documentElement.style.setProperty("--card", e
 document.addEventListener("keydown", e => {
   if(e.key === "Escape") return closeLB();
   if(e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
-  const order = [...LETTERS, "cmp"];
+  // In a running contest 1/2 vote for the left/right candidate.
+  if(current === "contest" && (e.key === "1" || e.key === "2")){
+    const pair = contest && cPair(contest);
+    if(pair){ contest = cVote(contest, pair[+e.key - 1]); cSave(); show("contest"); }
+    return;
+  }
+  const order = [...LETTERS, "cmp", "contest"];
   const i = order.indexOf(current);
   if(e.key === "ArrowRight") show(order[(i+1) % order.length]);
   else if(e.key === "ArrowLeft") show(order[(i-1+order.length) % order.length]);
   else if(/^[a-jA-J]$/.test(e.key)) show(e.key.toUpperCase());
   else if(e.key === "0") show("cmp");
+  else if(e.key === "9") show("contest");
 });
 
+// A result link may also arrive on an already-open page (pasted into the address bar,
+// or written by the share button), so react to the hash instead of only reading it once.
+addEventListener("hashchange", () => show(sharedRanking() ? "contest" : current));
+
 buildNav();
-show("A");
+show(sharedRanking() ? "contest" : "A");   // a shared result link opens on that result
 </script>
 </body>
 </html>
