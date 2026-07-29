@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Euro Banknotes – Design Proposals A–J</title>
+<meta name="description" content="Browse the ten design proposals (A–J) the European Central Bank published for the future euro banknote series: all denominations, front and back, side by side. An independent viewer, not affiliated with the ECB.">
+<meta name="color-scheme" content="dark light">
+<meta property="og:type" content="website">
+<meta property="og:title" content="New Euro Banknotes – ECB design proposals">
+<meta property="og:description" content="All denominations of each proposal, front and back, at a glance.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💶</text></svg>">
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel-2:#1e222b; --line:#2a2f3a;
+    --fg:#e8eaee; --fg-dim:#9aa3b2; --accent:#4f8cff; --accent-2:#ffc247;
+    --radius:10px; --card:360px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f4f5f7; --panel:#fff; --panel-2:#f0f2f5; --line:#e1e4e9;
+           --fg:#1a1d23; --fg-dim:#5c6675; --accent:#1f6feb; --accent-2:#b07800; }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--fg);
+       font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+  header{position:sticky; top:0; z-index:20; background:var(--panel);
+         border-bottom:1px solid var(--line); padding:10px 16px}
+  .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+  h1{font-size:15px; font-weight:650; margin:0 14px 0 0; letter-spacing:.2px}
+  h1 span{color:var(--fg-dim); font-weight:400}
+  nav{display:flex; gap:4px; flex-wrap:wrap}
+  .tab{appearance:none; border:1px solid var(--line); background:var(--panel-2);
+       color:var(--fg); width:34px; height:34px; border-radius:8px;
+       font:600 14px/1 system-ui; cursor:pointer; transition:.12s; position:relative}
+  .tab.wide{width:auto; padding:0 12px}
+  .tab:hover{border-color:var(--accent); color:var(--accent)}
+  .tab.active{background:var(--accent); border-color:var(--accent); color:#fff}
+  .spacer{flex:1}
+  select,input[type=range]{background:var(--panel-2); color:var(--fg); border:1px solid var(--line);
+                           border-radius:8px; padding:6px 8px; font:inherit; font-size:13px}
+  label.ctl{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--fg-dim)}
+
+  main{padding:18px 16px 60px; max-width:1900px; margin:0 auto}
+  .meta{margin:0 0 16px}
+  .meta h2{margin:0 0 4px; font-size:24px; letter-spacing:-.3px}
+  .meta p{margin:0; color:var(--fg-dim); font-size:14px}
+  .meta a{color:var(--accent)}
+  .badge{display:inline-block; font-size:12px; padding:2px 8px; border-radius:99px;
+         border:1px solid var(--line); color:var(--accent-2); margin-left:8px; vertical-align:2px}
+  .badge.fmt{color:var(--fg-dim)}
+
+  .grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fill,minmax(var(--card),1fr));
+        align-items:start}
+  figure{margin:0; background:var(--panel); border:1px solid var(--line);
+         border-radius:var(--radius); overflow:hidden}
+
+  /* one box per denomination, holding both sides */
+  .pair{display:flex; gap:6px; padding:6px; background:var(--panel-2)}
+  .pair.h{flex-direction:column}   /* landscape note -> sides stacked      */
+  .pair.v{flex-direction:row}      /* portrait note  -> sides side by side */
+  .pane{position:relative; flex:1 1 0; min-width:0; display:flex}
+  .pane img{width:100%; height:auto; display:block; border-radius:4px;
+            cursor:zoom-in; background:#fff}
+  /* Proposal D's reverse images are served landscape although the design is portrait
+     (no EXIF orientation flag). Rotate them 90 deg CW in the layout. --r = natural w/h. */
+  .pane.rot{display:block}
+  .pane.rot img{position:absolute; top:0; left:0; width:calc(100% * var(--r)); height:auto;
+                max-width:none; transform-origin:0 0; transform:rotate(90deg) translateY(-100%)}
+  .pane .lbl{position:absolute; left:7px; top:7px; font-size:10px; letter-spacing:.6px;
+             text-transform:uppercase; background:rgba(0,0,0,.6); color:#fff;
+             padding:2px 7px; border-radius:99px; opacity:0; transition:.15s; pointer-events:none}
+  .pane:hover .lbl{opacity:1}
+
+  figcaption{padding:8px 12px; display:flex; justify-content:space-between;
+             align-items:baseline; gap:8px; border-top:1px solid var(--line)}
+  figcaption b{font-size:16px; font-weight:650}
+
+  #lightbox{position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.93);
+            display:none; align-items:center; justify-content:center; flex-direction:column;
+            gap:12px; padding:24px}
+  #lightbox.on{display:flex}
+  #lightbox img{max-width:96vw; max-height:84vh; object-fit:contain}
+  /* rotated note: swap the viewport constraints, the on-screen axes are swapped too */
+  #lightbox img.rot{max-width:84vh; max-height:96vw; transform:rotate(90deg)}
+  #lightbox .cap{color:#ddd; font-size:14px}
+  #lightbox .close{position:absolute; top:14px; right:20px; color:#ddd; font-size:28px;
+                   cursor:pointer; line-height:1}
+  .hint{color:var(--fg-dim); font-size:12px; margin-top:26px}
+  .hint a{color:inherit}
+  kbd{background:var(--panel-2); border:1px solid var(--line); border-bottom-width:2px;
+      border-radius:5px; padding:1px 5px; font:12px/1.4 ui-monospace,monospace}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="row">
+    <h1>New Euro Banknotes <span>· ECB design proposals</span></h1>
+    <nav id="nav"></nav>
+    <span class="spacer"></span>
+    <label class="ctl">Sides
+      <select id="filter">
+        <option value="all">both</option>
+        <option value="front">front only</option>
+        <option value="back">back only</option>
+      </select>
+    </label>
+    <label class="ctl">Size
+      <input type="range" id="size" min="200" max="760" step="20" value="360">
+    </label>
+  </div>
+</header>
+
+<main>
+  <div class="meta" id="meta"></div>
+  <div class="grid" id="grid"></div>
+  <p class="hint">
+    <kbd>←</kbd> <kbd>→</kbd> switch proposal · <kbd>A</kbd>–<kbd>J</kbd> jump directly · <kbd>0</kbd> compare view ·
+    click an image for the full-size view, <kbd>Esc</kbd> closes it.<br>
+    Images are loaded from <code>images/&lt;proposal&gt;/</code>; if a file is missing it is fetched
+    straight from ecb.europa.eu instead.<br>
+    An independent viewer, not affiliated with or endorsed by the ECB. The designs are the work of
+    their creators and are published by the
+    <a href="https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html"
+       target="_blank" rel="noopener">European Central Bank</a>.
+  </p>
+</main>
+
+<div id="lightbox"><span class="close" id="lbClose">×</span><img id="lbImg" alt=""><div class="cap" id="lbCap"></div></div>
+
+<script>
+const BASE   = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/shared/img";
+const DENOMS = [5,10,20,50,100,200];
+const SIDES  = ["front","back"];
+// Proposals whose notes are portrait; their two sides are shown next to each other.
+const PORTRAIT = new Set(["D","G","I","J"]);
+
+const PROPOSALS = {
+  A:{designer:"Studio Joost Grootens",                  theme:"European culture"},
+  B:{designer:"PunktFormStrich",                        theme:"Rivers and birds"},
+  C:{designer:"Neue Gestaltung GmbH",                   theme:"European culture"},
+  D:{designer:"Rudy Guedj and François Girard-Meunier", theme:"Rivers and birds"},
+  E:{designer:"Myrsini Vardopoulou",                    theme:"European culture"},
+  F:{designer:"Jan Robert Dünnweller",                  theme:"European culture"},
+  G:{designer:"Rubio & del Amo and Cruz más Cruz",      theme:"European culture"},
+  H:{designer:"Atelier Goppel-Toperngpong",             theme:"Rivers and birds"},
+  I:{designer:"Isabelle Daëron",                        theme:"Rivers and birds"},
+  J:{designer:"",                                       theme:"Rivers and birds"}
+};
+const LETTERS = Object.keys(PROPOSALS);
+const SRC_PAGE = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html";
+
+const sideLabel  = s => s === "front" ? "Front" : "Back";
+const localPath  = (L,d,s) => `images/${L}/${L}-${d}-${s}.jpg`;
+const remotePath = (L,d,s) => `${BASE}/banknote-design-proposal-${L.toLowerCase()}-${d}-${s}.jpg`;
+
+let current = "A";
+let cmpDenom = 5;
+
+const $ = s => document.querySelector(s);
+const grid = $("#grid"), meta = $("#meta");
+
+function buildNav(){
+  const nav = $("#nav");
+  LETTERS.forEach(L=>{
+    const b = document.createElement("button");
+    b.className = "tab";
+    b.textContent = L; b.dataset.k = L;
+    b.title = `Proposal ${L}`;
+    b.onclick = () => show(L);
+    nav.appendChild(b);
+  });
+  const c = document.createElement("button");
+  c.className = "tab wide"; c.textContent = "Compare"; c.dataset.k = "cmp";
+  c.title = "Compare all proposals";
+  c.onclick = () => show("cmp");
+  nav.appendChild(c);
+}
+
+function pane(L,d,side){
+  const p = document.createElement("div");
+  p.className = "pane";
+  const img = new Image();
+  img.loading = "lazy";
+  img.alt = `Proposal ${L}, €${d}, ${sideLabel(side).toLowerCase()}`;
+  img.dataset.remote = remotePath(L,d,side);
+  img.onerror = () => {
+    if(img.src !== img.dataset.remote){ img.src = img.dataset.remote; return; }  // fall back to the ECB copy
+    const fig = p.closest("figure");
+    p.remove();
+    if(fig && !fig.querySelector(".pane")) fig.remove();   // nothing left to show
+  };
+  // A portrait design served as a landscape file has no EXIF orientation flag.
+  // Detect it from the decoded size and rotate in the layout instead of touching the file.
+  img.onload = () => {
+    const nw = img.naturalWidth, nh = img.naturalHeight;
+    const needsRotation = PORTRAIT.has(L) && nw > nh;
+    p.classList.toggle("rot", needsRotation);
+    if(needsRotation){
+      p.style.setProperty("--r", nw / nh);
+      p.style.aspectRatio = `${nh} / ${nw}`;
+    }else{
+      p.style.removeProperty("--r");
+      p.style.aspectRatio = "";
+    }
+  };
+  img.src = localPath(L,d,side);
+  img.onclick = () => openLB(img);
+  const lbl = document.createElement("span");
+  lbl.className = "lbl"; lbl.textContent = sideLabel(side);
+  p.append(img, lbl);
+  return p;
+}
+
+// one figure per denomination, both sides inside
+function noteBox(L,d,filter){
+  const fig = document.createElement("figure");
+  const pair = document.createElement("div");
+  pair.className = "pair " + (PORTRAIT.has(L) ? "v" : "h");
+  SIDES.filter(s => filter === "all" || filter === s)
+       .forEach(s => pair.appendChild(pane(L,d,s)));
+
+  const cap = document.createElement("figcaption");
+  cap.innerHTML = `<b>€${d}</b><b>${L}</b>`;
+  fig.append(pair, cap);
+  return fig;
+}
+
+function show(key){
+  current = key;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.k === key));
+  grid.innerHTML = ""; meta.innerHTML = "";
+  const f = $("#filter").value;
+
+  if(key === "cmp"){
+    meta.innerHTML = `<h2>All proposals side by side</h2>
+      <p>The same denomination across all ten proposals.
+      <label class="ctl" style="display:inline-flex;margin-left:10px">Denomination
+        <select id="cmpD">${DENOMS.map(d=>`<option value="${d}"${d===cmpDenom?" selected":""}>€${d}</option>`).join("")}</select>
+      </label></p>`;
+    $("#cmpD").onchange = e => { cmpDenom = +e.target.value; show("cmp"); };
+    LETTERS.forEach(L => grid.appendChild(noteBox(L, cmpDenom, f)));
+    return;
+  }
+
+  const p = PROPOSALS[key];
+  meta.innerHTML = `<h2>Proposal ${key}
+      <span class="badge">${p.theme}</span>
+      <span class="badge fmt">${PORTRAIT.has(key) ? "portrait" : "landscape"}</span></h2>
+    <p>${p.designer ? "Designed by " + p.designer + " · " : ""}
+       <a href="${SRC_PAGE}" target="_blank" rel="noopener">Description on ecb.europa.eu</a></p>`;
+  DENOMS.forEach(d => grid.appendChild(noteBox(key, d, f)));
+}
+
+/* lightbox */
+const lb = $("#lightbox"), lbImg = $("#lbImg"), lbCap = $("#lbCap");
+function openLB(img){
+  lbImg.classList.toggle("rot", img.parentElement.classList.contains("rot"));
+  lbImg.src = img.currentSrc || img.src;
+  lbCap.textContent = img.alt;
+  lb.classList.add("on");
+}
+function closeLB(){ lb.classList.remove("on"); lbImg.src = ""; }
+lb.onclick = e => { if(e.target !== lbImg) closeLB(); };
+$("#lbClose").onclick = closeLB;
+
+/* controls */
+$("#filter").onchange = () => show(current);
+$("#size").oninput = e => document.documentElement.style.setProperty("--card", e.target.value + "px");
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") return closeLB();
+  if(e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+  const order = [...LETTERS, "cmp"];
+  const i = order.indexOf(current);
+  if(e.key === "ArrowRight") show(order[(i+1) % order.length]);
+  else if(e.key === "ArrowLeft") show(order[(i-1+order.length) % order.length]);
+  else if(/^[a-jA-J]$/.test(e.key)) show(e.key.toUpperCase());
+  else if(e.key === "0") show("cmp");
+});
+
+buildNav();
+show("A");
+</script>
+</body>
+</html>

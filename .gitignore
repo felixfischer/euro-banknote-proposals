@@ -1,0 +1,7 @@
+# Banknote images are ECB material and are deliberately NOT redistributed here.
+# Run download.sh (or build.sh) to fetch them into your working copy.
+images/
+dist/
+
+.DS_Store
+Thumbs.db
