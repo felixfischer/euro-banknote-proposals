@@ -1480,8 +1480,9 @@
       lb.classList.add("on");
     }
     function closeLB() { lb.classList.remove("on"); lbImg.src = ""; }
-    lb.onclick = e => { if (e.target !== lbImg) closeLB(); };
-    $("#lbClose").onclick = closeLB;
+    // Anywhere in the lightbox closes it, the image included -- the × is a small target,
+    // and there is nothing else in here to click.
+    lb.onclick = closeLB;
 
     /* controls */
     $("#filter").onchange = () => show(current);
