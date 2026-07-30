@@ -542,7 +542,7 @@
     }
 
     .lbl .l {
-      font: 700 clamp(22px, 5cqw, 38px)/1 system-ui;
+      font: 700 clamp(28px, 5vmin, 48px)/1 system-ui;
       color: #fff;
       letter-spacing: .5px
     }
@@ -553,7 +553,7 @@
     }
 
     .lbl .s {
-      font: 400 clamp(9px, 1.5cqw, 11px)/1 system-ui;
+      font: 400 clamp(10px, 2.5vmin, 20px)/1 system-ui;
       letter-spacing: 1.4px;
       text-transform: uppercase;
       color: rgba(255, 255, 255, .5)
@@ -1145,7 +1145,8 @@
       img.onclick = () => openLB(img);
       const lbl = document.createElement("span");
       lbl.className = "lbl";
-      lbl.innerHTML = `<span class="l">${L} ${d}</span>` +
+      lbl.innerHTML = `<span class="s" style="font-weight:bold;">${d} €</span>` +
+        `<span class="l">${L}</span>` +
         `<span class="s">${sideLabel(side)}</span>`;
       p.append(img, lbl);
       return p;
