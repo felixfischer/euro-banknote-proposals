@@ -93,7 +93,7 @@
   figure > figcaption{flex:0 0 auto}
 
   /* one box per denomination, holding both sides */
-  .pair{display:flex; gap:1rem}
+  .pair{display:flex; gap:1rem; position:relative}
   .pair.h{flex-direction:column}   /* landscape note -> sides stacked      */
   .pair.v{flex-direction:row}      /* portrait note  -> sides side by side */
   /* Proposal view: the notes are shown at their real relative size. The 200 fills
@@ -105,7 +105,10 @@
                                                  margin-inline:auto}
   /* Every pane carries the aspect ratio of the note AS DISPLAYED, in --ar and
      aspect-ratio. Sizing one axis is then enough, in any of the layouts below. */
-  .pane{position:relative; flex:1 1 0; min-width:0; display:block}
+  /* container-type: the hover caption scales with the pane, which ranges from a thumbnail
+     in the rank grid to a full-width note at max zoom. inline-size only -- size would need
+     the height to be independent of the content, and the img is what sets it. */
+  .pane{position:relative; flex:1 1 0; min-width:0; display:block; container-type:inline-size}
   /* Landscape pairs stack, so grow would inflate the pane boxes past the note's aspect
      ratio; keep them at content height and let the .pair centre them in the spare row
      height instead. Portrait pairs are a row and still need grow to split the width
@@ -118,10 +121,38 @@
      out as wide as the pane is tall, then turned onto its corner. */
   .pane.rot img{position:absolute; top:0; left:0; width:calc(100% / var(--ar)); height:auto;
                 max-width:none; transform-origin:0 0; transform:rotate(90deg) translateY(-100%)}
-  .pane .lbl{position:absolute; left:0; bottom:-18px; font-size:10px; letter-spacing:.8px;
-             text-transform:uppercase; color:var(--fg-dim);
-             opacity:0; transition:.15s; pointer-events:none}
+  /* Hover caption: a backdrop over the note itself, label centred in it. .rot panes are
+     turned in the layout but the overlay is not -- it sits in the pane box, which already
+     carries the displayed (upright) aspect ratio. */
+  .pane .lbl{position:absolute; inset:0; display:flex; flex-direction:column;
+             align-items:center; justify-content:center; gap:.35em; text-align:center;
+             background:rgba(10,12,16,.55); backdrop-filter:blur(2px);
+             opacity:0; transition:opacity .18s; pointer-events:none}
   .pane:hover .lbl{opacity:1}
+  .lbl .l{font:700 clamp(22px,5cqw,38px)/1 system-ui; color:#fff; letter-spacing:.5px}
+  .lbl .d{font:400 clamp(13px,2.4cqw,18px)/1 system-ui; color:#fff}
+  .lbl .s{font:400 clamp(9px,1.5cqw,11px)/1 system-ui; letter-spacing:1.4px;
+          text-transform:uppercase; color:rgba(255,255,255,.5)}
+
+  /* Turn a portrait pair on its side. Rotating alone would leave the pair's box at its
+     upright size, so the turned notes would overlap the neighbours: the pair is a row of
+     two portrait notes, hence wider than tall once turned. --turn-k (set from JS as the
+     pair's width/height) scales the turned long edge back inside the old width, and a
+     negative margin gives back the height that frees up -- see the JS. */
+  .pair.turn{transform:rotate(-90deg) scale(var(--turn-k,1)); transition:transform .25s}
+  /* Anchored to the figure, not the pair: inside the pair it would ride the rotation and
+     swing off to the side. The figure also spans the caption, so centre on the pair's own
+     box (--turn-top, its centre offset within the figure) rather than on 50% of the figure. */
+  figure{position:relative}
+  .turnbtn{position:absolute; left:50%; top:var(--turn-top,50%); translate:-50% -50%; z-index:3;
+           width:38px; height:38px;
+           display:grid; place-items:center; border:0; border-radius:50%; padding:0;
+           background:rgba(10,12,16,.6); backdrop-filter:blur(2px);
+           color:#fff; font:22px/1 system-ui; cursor:pointer;
+           opacity:0; transition:opacity .18s}
+  /* Keyboard users never hover, so focus has to reveal it too. */
+  figure:hover .turnbtn, .turnbtn:focus-visible{opacity:1}
+  .turnbtn:hover{background:var(--accent)}
 
   /* Compare and ranking: every card is a square, so a note is rendered at the same
      scale whether its design is landscape or portrait (long edge = the square
@@ -361,9 +392,54 @@ function pane(L,d,side){
   img.src = localPath(L,d,side);
   img.onclick = () => openLB(img);
   const lbl = document.createElement("span");
-  lbl.className = "lbl"; lbl.textContent = `${L} ${d} ${sideLabel(side)}`;
+  lbl.className = "lbl";
+  lbl.innerHTML = `<span class="l">${L} ${d}</span>` +
+                  `<span class="s">${sideLabel(side)}</span>`;
   p.append(img, lbl);
   return p;
+}
+
+/* Turn a portrait pair onto its side. Rotation does not affect layout, so the turned pair
+   would spill over its neighbours; scale it down by its own aspect ratio so the turned long
+   edge fits the width it had, and shrink the reserved height to match (a rotated box that
+   is k*height wide and k*width tall only needs k*width of row height). */
+function turnButton(pair, fig){
+  const b = document.createElement("button");
+  b.className = "turnbtn";
+  b.textContent = "⟳";
+  b.title = "Turn the note sideways";
+  b.setAttribute("aria-label", "Turn the note sideways");
+  // The button sits on the figure, which also spans the caption; centre it on the visible
+  // note area instead, i.e. the pair's own box (whose height changes when turned).
+  const centre = () => {
+    const p = pair.getBoundingClientRect(), f = fig.getBoundingClientRect();
+    const h = pair.classList.contains("turn") ? p.height + parseFloat(pair.style.marginBottom || 0)
+                                              : p.height;
+    b.style.setProperty("--turn-top", (p.top - f.top + h / 2) + "px");
+  };
+  b.onclick = () => {
+    const on = !pair.classList.contains("turn");
+    if(on){
+      const r = pair.getBoundingClientRect();
+      // Turned, the box is r.height wide and r.width tall. Scale so the new width fits the
+      // old one, then pull in the leftover height with a negative margin -- the pair's own
+      // box must keep its size, or the panes reflow and fight the rotation.
+      const k = Math.min(1, r.width / r.height);
+      pair.style.setProperty("--turn-k", k);
+      pair.style.marginBottom = (r.width * k - r.height) + "px";
+    }else{
+      pair.style.removeProperty("--turn-k");
+      pair.style.removeProperty("margin-bottom");
+    }
+    pair.classList.toggle("turn", on);
+    b.setAttribute("aria-pressed", on);
+    centre();
+  };
+  // Images decode after the button is built, so the pair has no height yet. Recentre when
+  // the pointer reaches the figure -- that is what reveals the button, and by then the
+  // layout is settled. Cheap enough to just redo on every enter.
+  fig.addEventListener("pointerenter", centre);
+  return b;
 }
 
 // one figure per denomination, both sides inside
@@ -380,6 +456,8 @@ function noteBox(L,d,filter,solo){
   if(solo) cap.className = "solo";
   cap.innerHTML = `<b>Proposal ${L}</b>`;
   fig.append(pair, cap);
+  // After the pair, so it stacks above it; before the caption is irrelevant (absolute).
+  if(PORTRAIT.has(L)) fig.appendChild(turnButton(pair, fig));
   return fig;
 }
 
@@ -399,7 +477,6 @@ function show(key){
     history.replaceState(null, "", "#" + key);
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.k === key));
   grid.innerHTML = ""; meta.innerHTML = "";
-  resetPortraitAr();
   grid.classList.toggle("cmp", key === "cmp");
   grid.classList.remove("contest", "rank");
   const f = $("#filter").value;
