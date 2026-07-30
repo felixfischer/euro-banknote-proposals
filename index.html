@@ -93,7 +93,7 @@
   figure > figcaption{flex:0 0 auto}
 
   /* one box per denomination, holding both sides */
-  .pair{display:flex; gap:2rem}
+  .pair{display:flex; gap:1rem}
   .pair.h{flex-direction:column}   /* landscape note -> sides stacked      */
   .pair.v{flex-direction:row}      /* portrait note  -> sides side by side */
   /* Proposal view: the notes are shown at their real relative size. The 200 fills
@@ -126,24 +126,43 @@
   /* Compare and ranking: every card is a square, so a note is rendered at the same
      scale whether its design is landscape or portrait (long edge = the square
      side minus padding and gap, in both cases). Keeps the grid rows even too. */
-  .grid.cmp .pair,.grid.rank .pair,.grid.contest .pair{aspect-ratio:1; align-items:center; justify-content:center}
-  /* --gap must track the .pair gap; the pane sizes below subtract it from the square. */
-  .grid.cmp .pane,.grid.rank .pane,.grid.contest .pane{flex:0 0 auto; --gap:2rem;
+  /* One gap for both orientations, declared on the pair so it inherits to the panes, which
+     subtract it from the square. It costs landscape nothing (those notes are capped by the
+     square's width, so the gap only eats spare vertical slack) but costs portrait directly
+     (two notes side by side split the square's width), so it is kept small. */
+  /* --long is the long edge every note gets, whatever its orientation, so a landscape note
+     and a portrait one come out the same size on screen. Portrait is the tighter of the
+     two: its pair splits the square's width, so each note is (100% - gap)/2 wide and
+     (100% - gap)/2/AR long. --ar-portrait is that limiting portrait ratio, set from JS
+     (the proposals do not share one aspect ratio, so it cannot be a constant here); the
+     fallback is the nominal euro format for the moment before the images have loaded. */
+  .grid.cmp .pair,.grid.rank .pair,.grid.contest .pair{aspect-ratio:1; align-items:center;
+                                                       justify-content:center;
+                                                       --gap:1rem; gap:var(--gap);
+                                                       --long:calc((100% - var(--gap))/2
+                                                                   / var(--ar-portrait,.5169))}
+  .grid.cmp .pane,.grid.rank .pane,.grid.contest .pane{flex:0 0 auto;
                                                        max-width:100%; max-height:100%}
-  /* Stacked: each pane gets half the height, and its width follows from --ar. Cap that
-     width at the full square too, or a landscape note wider than half the height is tall
-     enough to fit but too wide, and spills out sideways. */
+  /* Stacked: a landscape note's long edge is its width, so hold that to --long. Also cap
+     the height at half the square (minus the gap), or a squarer note would fit the width
+     but the two panes would not fit the square vertically. */
   .grid.cmp .pair.two.h .pane,
   .grid.rank .pair.two.h .pane,
-  .grid.contest .pair.two.h .pane{height:min((100% - var(--gap))/2, 100% / var(--ar,1));
-                                  width:auto}
+  .grid.contest .pair.two.h .pane{width:min(var(--long), 100%,
+                                            ((100% - var(--gap))/2) * var(--ar,1));
+                                  height:auto}
+  /* Alongside: the two notes split the square's width. Two portrait notes at the full
+     square height would need more width than the square has, so the pair limits them and
+     they end up slightly smaller than landscape ones -- the gap above is what keeps that
+     difference small. */
   .grid.cmp .pair.two.v .pane,
   .grid.rank .pair.two.v .pane,
-  .grid.contest .pair.two.v .pane{width:calc((100% - var(--gap))/2)}          /* alongside */
-  /* single side: fit the note into the square by its longer edge */
+  .grid.contest .pair.two.v .pane{width:calc((100% - var(--gap))/2)}
+  /* single side: fit the note into the square by its longer edge, held to the same --long
+     budget so one-sided cards match the two-sided ones. */
   .grid.cmp .pair.one .pane,
   .grid.rank .pair.one .pane,
-  .grid.contest .pair.one .pane{width:calc(100% * min(1, var(--ar,1)))}
+  .grid.contest .pair.one .pane{width:calc(var(--long) * min(1, var(--ar,1)))}
 
   figcaption{padding:14px 0 0; display:flex; justify-content:center;
              align-items:baseline; gap:8px; color:var(--fg-dim);
@@ -301,6 +320,20 @@ function buildNav(){
   nav.appendChild(t);
 }
 
+/* The compare/rank/contest cards size every note against one long edge (--long) so that a
+   landscape note and a portrait one come out equally large. Portrait sets that budget,
+   because two portrait notes side by side are what the square constrains hardest. The
+   proposals do not share one aspect ratio, so take the narrowest portrait note on screen:
+   sizing to any wider one would let it overflow its half of the square. Reset per view;
+   images decode asynchronously, so this only ever tightens as they arrive. */
+let portraitAr = 0;
+function notePortraitAr(ar){
+  if(portraitAr && ar >= portraitAr) return;
+  portraitAr = ar;
+  grid.style.setProperty("--ar-portrait", ar);
+}
+const resetPortraitAr = () => { portraitAr = 0; grid.style.removeProperty("--ar-portrait"); };
+
 function pane(L,d,side){
   const p = document.createElement("div");
   p.className = "pane";
@@ -323,6 +356,7 @@ function pane(L,d,side){
     p.classList.toggle("rot", rot);
     p.style.setProperty("--ar", dw / dh);
     p.style.aspectRatio = `${dw} / ${dh}`;
+    if(dw < dh) notePortraitAr(dw / dh);            // portrait: feeds the shared --long
   };
   img.src = localPath(L,d,side);
   img.onclick = () => openLB(img);
@@ -365,6 +399,7 @@ function show(key){
     history.replaceState(null, "", "#" + key);
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.k === key));
   grid.innerHTML = ""; meta.innerHTML = "";
+  resetPortraitAr();
   grid.classList.toggle("cmp", key === "cmp");
   grid.classList.remove("contest", "rank");
   const f = $("#filter").value;
