@@ -395,11 +395,18 @@
 
     /* The one explanatory paragraph on the contest view: set smaller than the running copy
      so it reads as background, and capped at a comfortable measure. */
-    .meta p.how {
+    .meta p.how,
+    .meta p.official {
       max-width: 68ch;
       margin-bottom: var(--s-4);
       font-size: var(--fs-sm);
       line-height: 1.6
+    }
+
+    /* Points off-site, so it sits apart from the result copy above it. */
+    .meta p.official {
+      margin-top: var(--s-3);
+      margin-bottom: 0
     }
 
     /* Separated by whitespace alone -- the middots read as punctuation next to a 26px
@@ -1052,6 +1059,9 @@
     };
     const LETTERS = Object.keys(PROPOSALS);
     const SRC_PAGE = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html";
+    // The real vote. This site only ever produces a personal ranking, so the result view
+    // points here rather than letting anyone mistake a contest run for having voted.
+    const ECB_SURVEY = "https://surveys.ecb.europa.eu/10b/neweuro/";
 
     const sideLabel = s => s === "front" ? "Front" : "Back";
     const localPath = (L, d, s) => `images/${L}/${L}-${d}-${s}.jpg`;
@@ -1365,6 +1375,9 @@
           "Ranked from your " + savedVotes() + " comparisons."}
        Winner: <strong>proposal ${first}</strong>${PROPOSALS[first].designer ?
           " · " + PROPOSALS[first].designer : ""}.</p>
+    <p class="official">This ranking counts for nothing official — the ECB runs its own survey, and
+       that is the one that decides. <a href="${ECB_SURVEY}" target="_blank" rel="noopener">Vote at
+       the ECB</a>.</p>
     <div class="btnrow">
       ${shared ? "" : `<button class="btn solid" id="cShare">Share my ranking</button>`}
       <button class="btn" id="cAgain">${shared ? "Run my own contest" : "Run it again"}</button>
