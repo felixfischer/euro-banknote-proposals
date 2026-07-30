@@ -2,6 +2,7 @@
 # Run download.sh (or build.sh) to fetch them into your working copy.
 images/
 dist/
+.claude/
 
 .DS_Store
 Thumbs.db
