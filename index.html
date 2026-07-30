@@ -457,7 +457,9 @@ function noteBox(L,d,filter,solo){
   cap.innerHTML = `<b>Proposal ${L}</b>`;
   fig.append(pair, cap);
   // After the pair, so it stacks above it; before the caption is irrelevant (absolute).
-  if(PORTRAIT.has(L)) fig.appendChild(turnButton(pair, fig));
+  // Only D: its notes are the ones served in the wrong orientation, so turning them is
+  // what actually helps. The other portrait proposals read fine upright.
+  if(L === "D") fig.appendChild(turnButton(pair, fig));
   return fig;
 }
 
