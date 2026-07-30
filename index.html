@@ -216,7 +216,6 @@
              align-items:baseline; gap:8px; color:var(--fg-dim);
              font-size:13px; letter-spacing:.4px;}
   figcaption b{font-weight:500}
-  figcaption.solo{justify-content:center; gap:5px; display: none}   /* proposal view: one centred label */
 
   /* Contest: two candidates side by side, each a normal note box plus a vote button.
      Below 700px they stack, so a note is never squeezed to thumbnail size on a phone. */
@@ -316,8 +315,7 @@
        target="_blank" rel="noopener">Source on GitHub</a><br>
     The designs are the work of their creators and are published by the
     <a href="https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html"
-       target="_blank" rel="noopener">European Central Bank</a>.<br>
-    
+       target="_blank" rel="noopener">European Central Bank</a>.
   </p>
 </main>
 
@@ -392,7 +390,6 @@ function notePortraitAr(ar){
   portraitAr = ar;
   grid.style.setProperty("--ar-portrait", ar);
 }
-const resetPortraitAr = () => { portraitAr = 0; grid.style.removeProperty("--ar-portrait"); };
 
 function pane(L,d,side){
   const p = document.createElement("div");
@@ -471,8 +468,10 @@ function turnButton(pair, fig){
   return b;
 }
 
-// one figure per denomination, both sides inside
-function noteBox(L,d,filter,solo){
+// one figure per denomination, both sides inside.
+// captionless: the proposal view names the proposal in its heading, so a per-card
+// "Proposal A" under every note is just repetition -- skip the caption there.
+function noteBox(L,d,filter,captionless){
   const fig = document.createElement("figure");
   const pair = document.createElement("div");
   const shown = SIDES.filter(s => filter === "all" || filter === s);
@@ -480,11 +479,12 @@ function noteBox(L,d,filter,solo){
   pair.style.setProperty("--scale", WIDTH_MM[d] / WIDTH_MM[200]);
   shown.forEach(s => pair.appendChild(pane(L,d,s)));
 
-  const cap = document.createElement("figcaption");
-  // Proposal view shows one label ("G 5"); elsewhere the letter sits opposite the value.
-  if(solo) cap.className = "solo";
-  cap.innerHTML = `<b>Proposal ${L}</b>`;
-  fig.append(pair, cap);
+  fig.append(pair);
+  if(!captionless){
+    const cap = document.createElement("figcaption");
+    cap.innerHTML = `<b>Proposal ${L}</b>`;
+    fig.append(cap);
+  }
   // After the pair, so it stacks above it; before the caption is irrelevant (absolute).
   // Only D: its notes are the ones served in the wrong orientation, so turning them is
   // what actually helps. The other portrait proposals read fine upright.
@@ -566,8 +566,13 @@ function settle(c){
 }
 const cPair = c => c.a && c.a.length && c.b.length ? [c.a[0], c.b[0]] : null;
 const cDone = c => !cPair(c) && c.runs.length === 1;
-// Upper bound n*ceil(log2 n); good enough for "vote 7 of ~40".
-const cTotal = n => n * Math.ceil(Math.log2(n));
+
+/* ponytail: no "of N" at all. The old n*ceil(log2 n) bound advertised 40 for ten
+   proposals where a real run takes 15-25 (avg ~21), and predicting the true worst
+   case from a mid-run state is not worth the code: the queue's future pairing order
+   is what decides it, so any estimate cheap enough to be worth writing either
+   overstates it or grows under the user's feet, which is worse than saying nothing.
+   The vote count alone is honest and the run visibly ends on its own. */
 
 function cVote(c, winner){
   const from = c.a[0] === winner ? c.a : c.b;
@@ -609,7 +614,7 @@ function showRanking(rank, shared){
   meta.innerHTML = `<h2>${shared ? "A shared ranking" : "Your ranking"}
       <span class="badge">${PROPOSALS[first].theme}</span></h2>
     <p>${shared ? "Someone else's result, read from the link." :
-        "Ranked from your " + contestVotes + " comparisons."}
+        "Ranked from your " + contest.votes + " comparisons."}
        Winner: <strong>proposal ${first}</strong>${PROPOSALS[first].designer ?
         " · " + PROPOSALS[first].designer : ""}.</p>
     <div class="btnrow">
@@ -618,7 +623,7 @@ function showRanking(rank, shared){
     </div>`;
   $("#cAgain").onclick = () => {
     history.replaceState(null, "", location.pathname + location.search);
-    contest = newContest(); contestVotes = 0; cSave(); show("contest");
+    contest = newContest(); cSave(); show("contest");
   };
   if(!shared) $("#cShare").onclick = async e => {
     const url = location.origin === "null" ? location.href.split("#")[0] + "#contest=" + rank.join("")
@@ -629,13 +634,14 @@ function showRanking(rank, shared){
 
   grid.classList.add("rank");
   rank.forEach((L,i) => {
-    const fig = noteBox(L, 5, "all");
+    const fig = noteBox(L, 5, "all", true);
     if(i === 0) fig.classList.add("first");
     const pos = document.createElement("span");
     pos.className = "pos"; pos.textContent = "#" + (i+1);
     fig.prepend(pos);
-    const cap = fig.querySelector("figcaption");
+    const cap = document.createElement("figcaption");
     cap.innerHTML = `<b>${L}</b><b>#${i+1}</b>`;
+    fig.append(cap);
     // The whole card opens the proposal, except the images: those keep their lightbox.
     fig.classList.add("link");
     fig.title = `Show all denominations of proposal ${L}`;
@@ -644,14 +650,11 @@ function showRanking(rank, shared){
   });
 }
 
-let contestVotes = 0;   // kept separately: a resumed run reports its own count
-
 function showContest(){
   const shared = sharedRanking();
   if(shared) return showRanking(shared, true);
 
   if(!contest) contest = cLoad() || newContest();
-  contestVotes = contest.votes;
   const pair = cPair(contest);
 
   if(!pair){
@@ -660,11 +663,10 @@ function showContest(){
     return showRanking(rank, false);
   }
 
-  const n = LETTERS.length, total = cTotal(n);
   // Rotate the denomination so a full run shows every note, without another control.
   const d = DENOMS[contest.votes % DENOMS.length];
   meta.innerHTML = `<h2>Which one do you prefer?</h2>
-    <p>Comparison ${contest.votes + 1} of at most ${total}<span class="keys"> ·
+    <p>Comparison ${contest.votes + 1}<span class="keys"> ·
        <kbd>1</kbd>/<kbd>2</kbd> to vote</span>
     <span class="btnrow" style="display:inline-flex;margin:0 0 0 10px">
       <button class="btn" id="cReset">Start over</button>
@@ -672,11 +674,13 @@ function showContest(){
   $("#cReset").onclick = () => { contest = newContest(); cSave(); show("contest"); };
 
   grid.classList.add("contest");
+  // The candidates are deliberately unlabelled: the vote should go to the design,
+  // not to a letter. The caption holds only the vote button.
   pair.forEach((L,i) => {
-    const fig = noteBox(L, d, "all");
-    const cap = fig.querySelector("figcaption");
-    cap.innerHTML = ''; // `<b>${L} ${d}</b>`;
+    const fig = noteBox(L, d, "all", true);
+    const cap = document.createElement("figcaption");
     cap.appendChild(voteButton(L, pair[1-i], i+1));
+    fig.append(cap);
     grid.appendChild(fig);
   });
 }
@@ -701,7 +705,8 @@ function selftest(){
     }
     console.assert(cDone(c), "not finished", p.join(""));
     console.assert(c.runs[0].join("") === "ABCDE", "not sorted", p.join(""), c.runs[0].join(""));
-    console.assert(c.votes <= cTotal(5), "too many votes", c.votes);
+    // n*ceil(log2 n) is no longer shown to anyone, but it is still a true ceiling.
+    console.assert(c.votes <= 5 * Math.ceil(Math.log2(5)), "too many votes", c.votes);
     runs++;
   }
   console.log(`merge selftest ok (${runs} permutations)`);
