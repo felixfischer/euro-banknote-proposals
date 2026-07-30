@@ -6,7 +6,9 @@ your way to a personal favourite.
 
 **Live version: <https://felixfischer.github.io/euro-banknote-proposals/>**
 
-[![The viewer showing all six denominations of one proposal](screenshot.jpg)](https://felixfischer.github.io/euro-banknote-proposals/)
+[![The compare view: the €100 note of all ten proposals, front and back, side by side](screenshot-compare.jpg)](https://felixfischer.github.io/euro-banknote-proposals/)
+
+<sub>**Compare** — the same denomination across all ten proposals.</sub>
 
 **This is a frontend, nothing more.** The designs, the images and every idea in them belong to
 their creators. This repository exists only because comparing the proposals on the official page
@@ -16,17 +18,23 @@ them is not, which is where the contest came from.
 
 ## What it does
 
+![Proposal G: all six denominations, front and back, at their real relative sizes](screenshot-proposal.jpg)
+
+<sub>**Proposal view** — all six denominations of one proposal, sized in proportion to each other.</sub>
+
 - All six denominations (€5–€200) of a proposal on one screen, front and back paired in one box
+- Notes are shown at their real relative sizes, so a €5 is visibly smaller than a €200
 - Layout follows the artwork: landscape designs stack the two sides vertically, portrait designs
   (**D, G, I, J**) place them side by side
 - Switch proposals with the tabs, the arrow keys, or by pressing `A`–`J`; `0` opens Compare,
   `9` opens Contest, and `1`/`2` vote inside a contest
 - **Compare** view: the same denomination across all ten proposals at once
 - **Contest** view: vote on pairs of proposals until a personal ranking 1–10 emerges. A merge
-  sort picks the pairings, so it asks only the comparisons it actually needs — about 23 votes
+  sort picks the pairings, so it asks only the comparisons it actually needs — around 21 votes
   for ten proposals, none of them redundant. Your votes never leave the browser: progress and
   result live in `localStorage`, and the result link (`#contest=…`) encodes the ranking itself,
   so sharing it needs no server
+- Hovering a note dims it and names it — proposal letter, denomination, side
 - Filter to front or back only, adjustable card size, click any note for a full-size view
 - No build tooling, no dependencies, no tracking — one `index.html` that also runs straight from
   the local filesystem
@@ -46,13 +54,18 @@ those URLs alive.
 
 ## The contest
 
+![Two proposals shown head to head, with a vote button under each](screenshot-contest.jpg)
+
+<sub>**Contest** — two at a time, until a ranking falls out.</sub>
+
 Ten proposals are too many to judge at once, but two are easy. The **Contest** tab shows two
 proposals at the same denomination — front and back of each — and you pick one. Repeat until a
 ranking from 1 to 10 falls out.
 
 The pairings are not random and there is no bracket: a **merge sort** asks the questions. That
-means it only ever asks comparisons it actually needs (about 23 for ten proposals), never asks the
-same pair twice, ends by itself, and produces a complete ranking rather than just a winner. The
+means it only ever asks comparisons it actually needs (typically around 21 for ten proposals, never
+more than 40), never asks the same pair twice, ends by itself, and produces a complete ranking
+rather than just a winner. The
 denomination rotates from one comparison to the next, so a single run walks past every note.
 
 Nothing is sent anywhere. The run in progress and the final ranking live in `localStorage`, so
@@ -128,12 +141,16 @@ their side. The viewer detects this at load time: if a proposal is portrait but 
 wider than it is tall, that image is rotated 90° clockwise in the layout. The downloaded files are
 never modified.
 
+Because it is ambiguous which way round D's designs are meant to be read, its notes carry a **⟳**
+button — it appears in the middle of a note on hover and turns that pair on its side.
+
 ## Files
 
 ```
 index.html                      the viewer (HTML, CSS and JS in one file)
 download.sh [dir]               fetches the images into <dir>/images/
 build.sh [out]                  assembles ./dist for deployment
+screenshot-*.jpg                README screenshots; -compare is the og:image
 render.yaml                     Render blueprint
 .github/workflows/pages.yml     GitHub Pages deployment
 images/, dist/                  generated, git-ignored
