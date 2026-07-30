@@ -27,12 +27,12 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💶</text></svg>">
 <style>
   :root{
-    --bg:#0f1115; --panel:#171a21; --panel-2:#1e222b; --line:#2a2f3a;
+    --bg:#0f1115; --line:#2a2f3a;
     --fg:#e8eaee; --fg-dim:#9aa3b2; --accent:#4f8cff; --accent-2:#ffc247;
-    --radius:10px; --card:360px;
+    --card:360px;
   }
   @media (prefers-color-scheme: light){
-    :root{ --bg:#f4f5f7; --panel:#fff; --panel-2:#f0f2f5; --line:#e1e4e9;
+    :root{ --bg:#fbfbfc; --line:#e1e4e9;
            --fg:#1a1d23; --fg-dim:#5c6675; --accent:#1f6feb; --accent-2:#b07800; }
   }
   *{box-sizing:border-box}
@@ -40,54 +40,53 @@
   body{background:var(--bg); color:var(--fg);
        font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 
-  header{position:sticky; top:0; z-index:20; background:var(--panel);
-         border-bottom:1px solid var(--line); padding:10px 16px}
-  .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-  h1{font-size:15px; font-weight:650; margin:0 14px 0 0; letter-spacing:.2px}
+  header{position:sticky; top:0; z-index:20; background:var(--bg); padding:18px 40px 14px}
+  .row{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  h1{font-size:14px; font-weight:600; margin:0 10px 0 0; letter-spacing:.2px}
   h1 span{color:var(--fg-dim); font-weight:400}
-  nav{display:flex; gap:4px; flex-wrap:wrap}
-  .tab{appearance:none; border:1px solid var(--line); background:var(--panel-2);
-       color:var(--fg); width:34px; height:34px; border-radius:8px;
-       font:600 14px/1 system-ui; cursor:pointer; transition:.12s; position:relative}
-  .tab.wide{width:auto; padding:0 12px}
-  .tab:hover{border-color:var(--accent); color:var(--accent)}
-  .tab.active{background:var(--accent); border-color:var(--accent); color:#fff}
+  nav{display:flex; gap:2px; flex-wrap:wrap}
+  .tab{appearance:none; border:0; background:none;
+       color:var(--fg-dim); min-width:28px; height:28px; padding:0 6px;
+       font:500 14px/1 system-ui; cursor:pointer; transition:.12s}
+  .tab.wide{padding:0 10px}
+  .tab:hover{color:var(--fg)}
+  .tab.active{color:var(--accent); font-weight:650}
   .spacer{flex:1}
-  select,input[type=range]{background:var(--panel-2); color:var(--fg); border:1px solid var(--line);
-                           border-radius:8px; padding:6px 8px; font:inherit; font-size:13px}
+  select{appearance:none; background:none; color:var(--fg); border:0;
+         padding:2px 0; font:inherit; font-size:13px; cursor:pointer}
+  input[type=range]{accent-color:var(--accent); background:none; border:0; width:110px}
   label.ctl{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--fg-dim)}
 
-  main{padding:18px 16px 60px; margin:0 auto}
-  .meta{margin:0 0 16px}
-  .meta h2{margin:0 0 4px; font-size:24px; letter-spacing:-.3px}
+  main{padding:26px 40px 80px; margin:0 auto}
+  .meta{margin:0 0 40px}
+  .meta h2{margin:0 0 6px; font-size:26px; font-weight:600; letter-spacing:-.4px}
   .meta p{margin:0; color:var(--fg-dim); font-size:14px}
   .meta a{color:var(--accent)}
-  .badge{display:inline-block; font-size:12px; padding:2px 8px; border-radius:99px;
-         border:1px solid var(--line); color:var(--accent-2); margin-left:8px; vertical-align:2px}
-  .badge.fmt{color:var(--fg-dim)}
+  .badge{display:inline-block; font-size:13px; font-weight:400;
+         color:var(--fg-dim); margin-left:10px; vertical-align:2px}
+  .badge::before{content:"· "}
 
-  .grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fill,minmax(var(--card),1fr));
+  .grid{display:grid; gap:56px 40px; grid-template-columns:repeat(auto-fill,minmax(var(--card),1fr));
         align-items:start}
-  figure{margin:0; background:var(--panel); border:1px solid var(--line);
-         border-radius:var(--radius); overflow:hidden}
+  figure{margin:0}
 
   /* one box per denomination, holding both sides */
-  .pair{display:flex; gap:1rem; padding:1rem; background:var(--panel-2)}
+  .pair{display:flex; gap:1rem}
   .pair.h{flex-direction:column}   /* landscape note -> sides stacked      */
   .pair.v{flex-direction:row}      /* portrait note  -> sides side by side */
   /* Every pane carries the aspect ratio of the note AS DISPLAYED, in --ar and
      aspect-ratio. Sizing one axis is then enough, in any of the layouts below. */
   .pane{position:relative; flex:1 1 0; min-width:0; display:block}
-  .pane img{width:100%; height:auto; display:block; border-radius:4px;
+  .pane img{width:100%; height:auto; display:block;
             cursor:zoom-in; background:#fff}
   /* Proposal D's reverse images are served landscape although the design is portrait
      (no EXIF orientation flag). Rotate them 90 deg CW in the layout: the image is laid
      out as wide as the pane is tall, then turned onto its corner. */
   .pane.rot img{position:absolute; top:0; left:0; width:calc(100% / var(--ar)); height:auto;
                 max-width:none; transform-origin:0 0; transform:rotate(90deg) translateY(-100%)}
-  .pane .lbl{position:absolute; left:7px; top:7px; font-size:10px; letter-spacing:.6px;
-             text-transform:uppercase; background:rgba(0,0,0,.6); color:#fff;
-             padding:2px 7px; border-radius:99px; opacity:0; transition:.15s; pointer-events:none}
+  .pane .lbl{position:absolute; left:0; bottom:-18px; font-size:10px; letter-spacing:.8px;
+             text-transform:uppercase; color:var(--fg-dim);
+             opacity:0; transition:.15s; pointer-events:none}
   .pane:hover .lbl{opacity:1}
 
   /* Compare and ranking: every card is a square, so a note is rendered at the same
@@ -97,45 +96,43 @@
   .grid.cmp .pane,.grid.rank .pane,.grid.contest .pane{flex:0 0 auto}
   .grid.cmp .pair.two.h .pane,
   .grid.rank .pair.two.h .pane,
-  .grid.contest .pair.two.h .pane{height:calc((100% - 6px)/2); width:auto}   /* stacked  */
+  .grid.contest .pair.two.h .pane{height:calc((100% - 1rem)/2); width:auto}   /* stacked  */
   .grid.cmp .pair.two.v .pane,
   .grid.rank .pair.two.v .pane,
-  .grid.contest .pair.two.v .pane{width:calc((100% - 6px)/2)}                /* alongside */
+  .grid.contest .pair.two.v .pane{width:calc((100% - 1rem)/2)}                /* alongside */
   /* single side: fit the note into the square by its longer edge */
   .grid.cmp .pair.one .pane,
   .grid.rank .pair.one .pane,
   .grid.contest .pair.one .pane{width:calc(100% * min(1, var(--ar,1)))}
 
-  figcaption{padding:8px 12px; display:flex; justify-content:space-between;
-             align-items:baseline; gap:8px; border-top:1px solid var(--line)}
-  figcaption b{font-size:16px; font-weight:650}
+  figcaption{padding:14px 0 0; display:flex; justify-content:space-between;
+             align-items:baseline; gap:8px; color:var(--fg-dim);
+             font-size:13px; letter-spacing:.4px}
+  figcaption b{font-weight:500}
 
   /* Contest: two candidates side by side, each a normal note box plus a vote button.
      Below 700px they stack, so a note is never squeezed to thumbnail size on a phone. */
   .grid.contest{grid-template-columns:repeat(2,1fr); max-width:1100px; margin:0 auto}
   @media (max-width:700px){ .grid.contest{grid-template-columns:1fr} }
-  .grid.contest figcaption{flex-direction:column; align-items:stretch; gap:8px}
-  .vote{appearance:none; border:1px solid var(--accent); background:var(--accent); color:#fff;
-        border-radius:8px; padding:9px 14px; font:650 14px/1 system-ui; cursor:pointer;
+  .grid.contest figcaption{flex-direction:column; align-items:stretch; gap:14px}
+  .vote{appearance:none; border:1px solid var(--line); background:none; color:var(--fg);
+        padding:11px 14px; font:500 14px/1 system-ui; cursor:pointer;
         width:100%; transition:.12s}
-  .vote:hover{filter:brightness(1.1)}
-  .vote small{font-weight:400; opacity:.8}
+  .vote:hover{border-color:var(--accent); color:var(--accent)}
+  .vote small{color:var(--fg-dim)}
 
-  .grid.rank{grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); max-width:1100px; margin:0 auto}
+  .grid.rank{grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); max-width:1100px;
+             margin:22px auto 0}
   .grid.rank figure{position:relative}
   .grid.rank figure.link{cursor:pointer}
-  .grid.rank figure.link:hover{border-color:var(--accent)}
-  .grid.rank figure.link:hover figcaption b:first-child{color:var(--accent)}
-  .grid.rank .pos{position:absolute; left:8px; top:8px; z-index:2; min-width:24px; height:24px;
-                  display:grid; place-items:center; padding:0 6px; border-radius:99px;
-                  background:var(--panel); border:1px solid var(--line);
-                  font:650 13px/1 system-ui; color:var(--fg-dim)}
-  .grid.rank figure.first{outline:2px solid var(--accent-2); outline-offset:-1px}
-  .grid.rank figure.first .pos{background:var(--accent-2); border-color:var(--accent-2); color:#1a1d23}
-  .btnrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
-  .btn{appearance:none; border:1px solid var(--line); background:var(--panel-2); color:var(--fg);
-       border-radius:8px; padding:7px 12px; font:inherit; font-size:13px; cursor:pointer}
-  .btn:hover{border-color:var(--accent); color:var(--accent)}
+  .grid.rank figure.link:hover figcaption{color:var(--accent)}
+  .grid.rank .pos{position:absolute; left:0; top:-22px; z-index:2;
+                  font:600 13px/1 system-ui; color:var(--fg-dim)}
+  .grid.rank figure.first .pos{color:var(--accent-2)}
+  .btnrow{display:flex; gap:18px; flex-wrap:wrap; margin-top:14px}
+  .btn{appearance:none; border:0; background:none; color:var(--accent);
+       padding:0; font:inherit; font-size:13px; cursor:pointer}
+  .btn:hover{text-decoration:underline}
 
   #lightbox{position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.93);
             display:none; align-items:center; justify-content:center; flex-direction:column;
@@ -147,7 +144,7 @@
   #lightbox .cap{color:#ddd; font-size:14px}
   #lightbox .close{position:absolute; top:14px; right:20px; color:#ddd; font-size:28px;
                    cursor:pointer; line-height:1}
-  .hint{color:var(--fg-dim); font-size:12px; margin-top:26px}
+  .hint{color:var(--fg-dim); font-size:12px; line-height:1.9; margin-top:72px; max-width:70ch}
   .hint a{color:inherit}
   /* Keyboard shortcuts are noise without a keyboard. Keyed to the pointer, not the
      viewport: a small laptop window has one, a large tablet does not. */
@@ -156,9 +153,13 @@
      so it goes by width, not by pointer. Two 360px cards plus the gap and main's padding
      need 736px of content width, i.e. a 768px viewport once main's 32px padding is counted.
      Below that the grid is single-column at the default card size and the slider is inert. */
-  @media (max-width:767px){ .ctl.size{display:none} }
-  kbd{background:var(--panel-2); border:1px solid var(--line); border-bottom-width:2px;
-      border-radius:5px; padding:1px 5px; font:12px/1.4 ui-monospace,monospace}
+  @media (max-width:767px){
+    .ctl.size{display:none}
+    header{padding:14px 20px 12px}
+    main{padding:20px 20px 60px}
+    .grid{gap:40px 24px}
+  }
+  kbd{color:var(--fg); font:12px/1.4 ui-monospace,monospace}
 </style>
 </head>
 <body>
@@ -326,7 +327,7 @@ function show(key){
   const p = PROPOSALS[key];
   meta.innerHTML = `<h2>Proposal ${key}
       <span class="badge">${p.theme}</span>
-      <span class="badge fmt">${PORTRAIT.has(key) ? "portrait" : "landscape"}</span></h2>
+      <span class="badge">${PORTRAIT.has(key) ? "portrait" : "landscape"}</span></h2>
     <p>${p.designer ? "Designed by " + p.designer + " · " : ""}
        <a href="${SRC_PAGE}" target="_blank" rel="noopener">Description on ecb.europa.eu</a></p>`;
   DENOMS.forEach(d => grid.appendChild(noteBox(key, d, f)));
