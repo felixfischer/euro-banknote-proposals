@@ -90,15 +90,18 @@
              padding:2px 7px; border-radius:99px; opacity:0; transition:.15s; pointer-events:none}
   .pane:hover .lbl{opacity:1}
 
-  /* Compare view: every card is a square, so a note is rendered at the same
+  /* Compare and ranking: every card is a square, so a note is rendered at the same
      scale whether its design is landscape or portrait (long edge = the square
      side minus padding and gap, in both cases). Keeps the grid rows even too. */
-  .grid.cmp .pair{aspect-ratio:1; align-items:center; justify-content:center}
-  .grid.cmp .pane{flex:0 0 auto}
-  .grid.cmp .pair.two.h .pane{height:calc((100% - 6px)/2); width:auto}   /* stacked  */
-  .grid.cmp .pair.two.v .pane{width:calc((100% - 6px)/2)}                /* alongside */
+  .grid.cmp .pair,.grid.rank .pair{aspect-ratio:1; align-items:center; justify-content:center}
+  .grid.cmp .pane,.grid.rank .pane{flex:0 0 auto}
+  .grid.cmp .pair.two.h .pane,
+  .grid.rank .pair.two.h .pane{height:calc((100% - 6px)/2); width:auto}   /* stacked  */
+  .grid.cmp .pair.two.v .pane,
+  .grid.rank .pair.two.v .pane{width:calc((100% - 6px)/2)}                /* alongside */
   /* single side: fit the note into the square by its longer edge */
-  .grid.cmp .pair.one .pane{width:calc(100% * min(1, var(--ar,1)))}
+  .grid.cmp .pair.one .pane,
+  .grid.rank .pair.one .pane{width:calc(100% * min(1, var(--ar,1)))}
 
   figcaption{padding:8px 12px; display:flex; justify-content:space-between;
              align-items:baseline; gap:8px; border-top:1px solid var(--line)}
@@ -115,8 +118,11 @@
   .vote:hover{filter:brightness(1.1)}
   .vote small{font-weight:400; opacity:.8}
 
-  .grid.rank{grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); max-width:1100px; margin:0 auto}
+  .grid.rank{grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); max-width:1100px; margin:0 auto}
   .grid.rank figure{position:relative}
+  .grid.rank figure.link{cursor:pointer}
+  .grid.rank figure.link:hover{border-color:var(--accent)}
+  .grid.rank figure.link:hover figcaption b:first-child{color:var(--accent)}
   .grid.rank .pos{position:absolute; left:8px; top:8px; z-index:2; min-width:24px; height:24px;
                   display:grid; place-items:center; padding:0 6px; border-radius:99px;
                   background:var(--panel); border:1px solid var(--line);
@@ -419,12 +425,17 @@ function showRanking(rank, shared){
 
   grid.classList.add("rank");
   rank.forEach((L,i) => {
-    const fig = noteBox(L, 5, "front");
+    const fig = noteBox(L, 5, "all");
     if(i === 0) fig.classList.add("first");
     const pos = document.createElement("span");
     pos.className = "pos"; pos.textContent = "#" + (i+1);
     fig.prepend(pos);
-    fig.querySelector("figcaption").innerHTML = `<b>${L}</b><b>#${i+1}</b>`;
+    const cap = fig.querySelector("figcaption");
+    cap.innerHTML = `<b>${L}</b><b>#${i+1}</b>`;
+    // The whole card opens the proposal, except the images: those keep their lightbox.
+    fig.classList.add("link");
+    fig.title = `Show all denominations of proposal ${L}`;
+    fig.onclick = e => { if(e.target.tagName !== "IMG") show(L); };
     grid.appendChild(fig);
   });
 }
