@@ -193,7 +193,8 @@
      rem-scaling a hairline makes it blur at fractional device pixel ratios. */
     .tab,
     select,
-    .vote {
+    .vote,
+    .btn.solid {
       appearance: none;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -221,7 +222,8 @@
 
     .tab:focus-visible,
     select:focus-visible,
-    .vote:focus-visible {
+    .vote:focus-visible,
+    .btn.solid:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 1px
     }
@@ -764,6 +766,55 @@
       text-decoration: underline
     }
 
+    /* Sharing the ranking is the primary action on that view, so it gets a filled button
+     rather than the text .btn the secondary actions use. Chrome comes from the shared
+     control rule; this only sets the accent fill and sizing. */
+    .btn.solid {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      padding: var(--s-3) var(--s-4);
+      font: 500 var(--fs-md)/1 system-ui
+    }
+
+    .btn.solid:hover {
+      text-decoration: none;
+      filter: brightness(1.12)
+    }
+
+    /* Toast: fixed so it is visible wherever the user is scrolled. aria-live announces the
+     copy to screen readers; it is removed from the flow entirely when hidden. */
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: var(--s-8);
+      transform: translate(-50%, var(--s-4));
+      z-index: 200;
+      padding: var(--s-3) var(--s-5);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--tab-bg);
+      color: var(--fg);
+      font-size: var(--fs-sm);
+      box-shadow: 0 var(--s-2) var(--s-6) rgba(0, 0, 0, .4);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .18s, transform .18s, visibility .18s
+    }
+
+    #toast.on {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0)
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #toast {
+        transition: opacity .18s, visibility .18s;
+        transform: translate(-50%, 0)
+      }
+    }
+
     /* Viewport units below are deliberate: the lightbox sizes to the screen, not the scale. */
     #lightbox {
       position: fixed;
@@ -975,6 +1026,8 @@
     <div class="cap" id="lbCap"></div>
   </div>
 
+  <div id="toast" role="status" aria-live="polite"></div>
+
   <script>
     const BASE = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/shared/img";
     const DENOMS = [5, 10, 20, 50, 100, 200];
@@ -1009,6 +1062,16 @@
 
     const $ = s => document.querySelector(s);
     const grid = $("#grid"), meta = $("#meta");
+
+    // Transient confirmation. Re-showing restarts the timer rather than queueing.
+    let toastTimer = null;
+    function toast(msg, ms = 2600) {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("on");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("on"), ms);
+    }
 
     function buildNav() {
       const nav = $("#nav");
@@ -1167,7 +1230,7 @@
 
     function show(key) {
       current = key;
-      if (!sharedRanking() && viewFromHash() !== key)
+      if (!hashRanking() && viewFromHash() !== key)
         history.replaceState(null, "", "#" + key);
       document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.k === key));
       grid.innerHTML = ""; meta.innerHTML = "";
@@ -1205,7 +1268,7 @@
        ~22 votes for ten proposals. The full ranking is a by-product of sorting.
        State is plain arrays and integers, so it serialises to localStorage as is. */
 
-    const CKEY = "contest", RKEY = "contestResult";
+    const CKEY = "contest", RKEY = "contestResult", VKEY = "contestVotes";
 
     // runs: sorted runs still to be merged. a/b: the two runs being merged right now,
     // out: what has been merged of them. Head of a vs head of b is the open question.
@@ -1260,15 +1323,28 @@
       } catch (e) { return null; }
     };
     const cClear = () => { try { localStorage.removeItem(CKEY); } catch (e) { } };
-    const saveResult = r => { try { localStorage.setItem(RKEY, r.join("")); } catch (e) { } };
+    // The result and the votes it took, so reopening the link can still report the count.
+    const saveResult = (r, votes) => {
+      try {
+        localStorage.setItem(RKEY, r.join(""));
+        localStorage.setItem(VKEY, votes);
+      } catch (e) { }
+    };
+    const savedVotes = () => { try { return +localStorage.getItem(VKEY) || 0; } catch (e) { return 0; } };
 
-    // A ranking shared via #contest=FADC… — shown instead of your own, until you start a run.
-    function sharedRanking() {
+    // A ranking in the hash: #contest=FADC… — either someone else's, or your own once a run
+    // finishes and rewrites the hash to its result. Malformed codes are ignored.
+    function hashRanking() {
       const m = /[#&]contest=([A-J]{10})/.exec(location.hash);
       if (!m) return null;
       const r = m[1].split("");
-      return new Set(r).size === LETTERS.length ? r : null;   // ignore malformed codes
+      return new Set(r).size === LETTERS.length ? r : null;
     }
+    // Yours if it is the result this browser last produced -- that is what RKEY records.
+    // Anything else in the hash came from someone else's link.
+    const isOwnResult = r => {
+      try { return localStorage.getItem(RKEY) === r.join(""); } catch (e) { return false; }
+    };
 
     function voteButton(L, other, nth) {
       const b = document.createElement("button");
@@ -1285,22 +1361,24 @@
       meta.innerHTML = `<h2>${shared ? "A shared ranking" : "Your ranking"}
       <span class="badge">${PROPOSALS[first].theme}</span></h2>
     <p>${shared ? "Someone else's result, read from the link." :
-          "Ranked from your " + contest.votes + " comparisons."}
+          "Ranked from your " + savedVotes() + " comparisons."}
        Winner: <strong>proposal ${first}</strong>${PROPOSALS[first].designer ?
           " · " + PROPOSALS[first].designer : ""}.</p>
     <div class="btnrow">
+      ${shared ? "" : `<button class="btn solid" id="cShare">Share my ranking</button>`}
       <button class="btn" id="cAgain">${shared ? "Run my own contest" : "Run it again"}</button>
-      ${shared ? "" : `<button class="btn" id="cShare">Copy result link</button>`}
     </div>`;
       $("#cAgain").onclick = () => {
         history.replaceState(null, "", location.pathname + location.search);
         contest = newContest(); cSave(); show("contest");
       };
-      if (!shared) $("#cShare").onclick = async e => {
+      if (!shared) $("#cShare").onclick = async () => {
         const url = location.origin === "null" ? location.href.split("#")[0] + "#contest=" + rank.join("")
           : location.origin + location.pathname + "#contest=" + rank.join("");
-        try { await navigator.clipboard.writeText(url); e.target.textContent = "Link copied"; }
-        catch (err) { location.hash = "contest=" + rank.join(""); e.target.textContent = "Link in address bar"; }
+        try { await navigator.clipboard.writeText(url); toast("Link copied — paste it anywhere"); }
+        // No clipboard (insecure origin, or the user denied it). The address bar already
+        // holds this exact link -- a finished run puts it there -- so just say so.
+        catch (err) { toast("Copy the link from the address bar"); }
       };
 
       grid.classList.add("rank", "square");
@@ -1322,15 +1400,18 @@
     }
 
     function showContest() {
-      const shared = sharedRanking();
-      if (shared) return showRanking(shared, true);
+      const inHash = hashRanking();
+      if (inHash) return showRanking(inHash, !isOwnResult(inHash));
 
       if (!contest) contest = cLoad() || newContest();
       const pair = cPair(contest);
 
       if (!pair) {
         const rank = contest.runs[0];
-        saveResult(rank); cClear();
+        saveResult(rank, contest.votes); cClear();
+        // Put the result in the hash, so the finished ranking has a durable link: reload,
+        // bookmark or back-button all land on it again instead of starting a fresh run.
+        history.replaceState(null, "", "#contest=" + rank.join(""));
         return showRanking(rank, false);
       }
 
@@ -1428,7 +1509,7 @@
 
     // A result link may also arrive on an already-open page (pasted into the address bar,
     // or written by the share button), so react to the hash instead of only reading it once.
-    addEventListener("hashchange", () => show(sharedRanking() ? "contest" : viewFromHash() || current));
+    addEventListener("hashchange", () => show(hashRanking() ? "contest" : viewFromHash() || current));
 
     // Share the current view, hash included, so the link opens where the sender was.
     // navigator.share is mobile-mostly and needs a secure context; fall back to the clipboard.
@@ -1446,7 +1527,7 @@
     };
 
     buildNav();
-    show(sharedRanking() ? "contest" : viewFromHash() || "A");   // a shared result link opens on that result
+    show(hashRanking() ? "contest" : viewFromHash() || "A");   // a result link opens on that result
   </script>
 </body>
 
