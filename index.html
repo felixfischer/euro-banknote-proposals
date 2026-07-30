@@ -261,13 +261,16 @@
   /* Keyboard shortcuts are noise without a keyboard. Keyed to the pointer, not the
      viewport: a small laptop window has one, a large tablet does not. */
   @media (hover:none) and (pointer:coarse){ .keys{display:none} }
-  /* Below 768px there is no room for a second column, so the slider is inert -- hide it
-     and force one column regardless of its value. */
+  /* Below 740px there is no room for a second column, so the slider is inert -- hide it
+     and force one column regardless of its value. Small tablets (iPad mini portrait,
+     744px) clear that and keep the zoom. */
   .bigscreen{display:none}
-  @media (max-width:767px){
+  @media (max-width:739px){
     .bigscreen{display:inline}
     .ctl.size{display:none}
     .grid{--cols:1}
+  }
+  @media (max-width:767px){
     header{padding:14px 20px 12px}
     main{padding:20px 20px 60px}
     .grid{gap:40px 24px}
