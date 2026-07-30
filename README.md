@@ -36,7 +36,7 @@ them is not, which is where the contest came from.
   so sharing it needs no server
 - Hovering a note dims it and names it — proposal letter, denomination, side
 - Filter to front or back only, adjustable card size, click any note for a full-size view
-- No build tooling, no dependencies, no tracking — one `index.html` that also runs straight from
+- No build tooling, no dependencies — one `index.html` that also runs straight from
   the local filesystem
 
 ## Running it locally
@@ -70,7 +70,7 @@ the order the merges fall out in, and a bound cheap enough to compute either ove
 grows as you go, which is worse than not showing one. The
 denomination rotates from one comparison to the next, so a single run walks past every note.
 
-Nothing is sent anywhere. The run in progress and the final ranking live in `localStorage`, so
+No contest data is sent anywhere. The run in progress and the final ranking live in `localStorage`, so
 closing the tab mid-contest loses nothing. A finished ranking is shareable because the ten letters
 *are* the result: `#contest=FADCBEGHIJ` needs no server and no database to resolve.
 

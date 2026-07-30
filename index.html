@@ -1,819 +1,1438 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Compare New Euro Banknote Designs Side-by-Side</title>
-<meta name="description" content="A better way to explore the 10 new Euro banknote proposals. Comfortably view all denominations side-by-side, front and back, and vote for your favourite design.">
-<meta name="color-scheme" content="dark light">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Compare New Euro Banknote Designs Side-by-Side">
-<meta property="og:description" content="A better way to explore the 10 new Euro banknote proposals. Comfortably view all denominations side-by-side, front and back, and vote for your favourite design.">
-<meta property="og:site_name" content="Euro Banknote Design Proposals">
-<meta property="og:locale" content="en">
-<!-- Social preview: absolute URLs are required, relative ones are not resolved by crawlers. -->
-<meta property="og:url" content="https://felixfischer.github.io/euro-banknote-proposals/">
-<meta property="og:image" content="https://felixfischer.github.io/euro-banknote-proposals/screenshot-compare.jpg">
-<meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="800">
-<meta property="og:image:alt" content="The compare view: the €100 note of all ten design proposals, front and back, side by side.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Compare New Euro Banknote Designs Side-by-Side">
-<meta name="twitter:description" content="A better way to explore the 10 new Euro banknote proposals. Comfortably view all denominations side-by-side, front and back, and vote for your favourite design.">
-<meta name="twitter:image" content="https://felixfischer.github.io/euro-banknote-proposals/screenshot-compare.jpg">
-<meta name="twitter:image:alt" content="The compare view: the €100 note of all ten design proposals, front and back, side by side.">
-<link rel="canonical" href="https://felixfischer.github.io/euro-banknote-proposals/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💶</text></svg>">
-<style>
-  :root{
-    --bg:#0f1115; --line:#2a2f3a;
-    --fg:#e8eaee; --fg-dim:#9aa3b2; --accent:#4f8cff; --accent-2:#ffc247;
-    --tab-bg:#1a1e26;
-    --cols:3;
 
-    /* Spacing: a 4px ramp on the default 16px root, so --s-4 is 1rem. Named by
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compare New Euro Banknote Designs Side-by-Side</title>
+  <meta name="description"
+    content="A better way to explore the 10 new Euro banknote proposals. Comfortably view all denominations side-by-side, front and back, and vote for your favourite design.">
+  <meta name="color-scheme" content="dark light">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Compare New Euro Banknote Designs Side-by-Side">
+  <meta property="og:description"
+    content="A better way to explore the 10 new Euro banknote proposals. Comfortably view all denominations side-by-side, front and back, and vote for your favourite design.">
+  <meta property="og:site_name" content="Euro Banknote Design Proposals">
+  <meta property="og:locale" content="en">
+  <!-- Social preview: absolute URLs are required, relative ones are not resolved by crawlers. -->
+  <meta property="og:url" content="https://felixfischer.github.io/euro-banknote-proposals/">
+  <meta property="og:image" content="https://felixfischer.github.io/euro-banknote-proposals/screenshot-compare.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="800">
+  <meta property="og:image:alt"
+    content="The compare view: the €100 note of all ten design proposals, front and back, side by side.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Compare New Euro Banknote Designs Side-by-Side">
+  <meta name="twitter:description"
+    content="A better way to explore the 10 new Euro banknote proposals. Comfortably view all denominations side-by-side, front and back, and vote for your favourite design.">
+  <meta name="twitter:image" content="https://felixfischer.github.io/euro-banknote-proposals/screenshot-compare.jpg">
+  <meta name="twitter:image:alt"
+    content="The compare view: the €100 note of all ten design proposals, front and back, side by side.">
+  <link rel="canonical" href="https://felixfischer.github.io/euro-banknote-proposals/">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💶</text></svg>">
+  <style>
+    :root {
+      --bg: #0f1115;
+      --line: #2a2f3a;
+      --fg: #e8eaee;
+      --fg-dim: #9aa3b2;
+      --accent: #4f8cff;
+      --accent-2: #ffc247;
+      --tab-bg: #1a1e26;
+      --cols: 3;
+
+      /* Spacing: a 4px ramp on the default 16px root, so --s-4 is 1rem. Named by
        step rather than by pixel count, so a value can be retuned without
        renaming its uses. Everything below is snapped onto this ramp; the few
        values that stay in px say why where they sit. */
-    --s-1:.25rem;   /*  4px */
-    --s-2:.5rem;    /*  8px */
-    --s-3:.75rem;   /* 12px */
-    --s-4:1rem;     /* 16px */
-    --s-5:1.25rem;  /* 20px */
-    --s-6:1.5rem;   /* 24px */
-    --s-8:2rem;     /* 32px */
-    --s-10:2.5rem;  /* 40px */
-    --s-12:3rem;    /* 48px */
-    --s-16:4rem;    /* 64px */
-    --s-20:5rem;    /* 80px */
+      --s-1: .25rem;
+      /*  4px */
+      --s-2: .5rem;
+      /*  8px */
+      --s-3: .75rem;
+      /* 12px */
+      --s-4: 1rem;
+      /* 16px */
+      --s-5: 1.25rem;
+      /* 20px */
+      --s-6: 1.5rem;
+      /* 24px */
+      --s-8: 2rem;
+      /* 32px */
+      --s-10: 2.5rem;
+      /* 40px */
+      --s-12: 3rem;
+      /* 48px */
+      --s-16: 4rem;
+      /* 64px */
+      --s-20: 5rem;
+      /* 80px */
 
-    /* Type */
-    --fs-xs:.75rem;     /* 12px */
-    --fs-sm:.8125rem;   /* 13px */
-    --fs-md:.875rem;    /* 14px */
-    --fs-base:.9375rem; /* 15px, body */
-    --fs-lg:1rem;       /* 16px */
-    --fs-xl:1.75rem;    /* 28px, lightbox close */
-    --fs-2xl:1.625rem;  /* 26px, .meta h2 */
+      /* Type */
+      --fs-xs: .75rem;
+      /* 12px */
+      --fs-sm: .8125rem;
+      /* 13px */
+      --fs-md: .875rem;
+      /* 14px */
+      --fs-base: .9375rem;
+      /* 15px, body */
+      --fs-lg: 1rem;
+      /* 16px */
+      --fs-xl: 1.75rem;
+      /* 28px, lightbox close */
+      --fs-2xl: 1.625rem;
+      /* 26px, .meta h2 */
 
-    /* Controls */
-    --ctl-h:2rem;       /* 32px, .tab */
-    --ctl-h-sm:1.75rem; /* 28px, select */
-    --ctl-h-lg:2.5rem;  /* 40px, .tab on wide screens */
-    --radius:.375rem;   /* 6px */
-  }
-  @media (prefers-color-scheme: light){
-    :root{ --bg:#fbfbfc; --line:#e1e4e9;
-           --fg:#1a1d23; --fg-dim:#5c6675; --accent:#1f6feb; --accent-2:#b07800;
-           --tab-bg:#f1f3f6; }
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{background:var(--bg); color:var(--fg);
-       font:var(--fs-base)/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+      /* Controls */
+      --ctl-h: 2rem;
+      /* 32px, .tab, select, .vote */
+      --ctl-h-lg: 2.5rem;
+      /* 40px, .tab on wide screens */
+      --radius: .375rem;
+      /* 6px */
+    }
 
-  header{position:sticky; top:0; z-index:20; background:var(--bg);
-         padding:var(--s-5) var(--s-10) var(--s-3)}
-  .row{display:flex; align-items:center; gap:var(--s-4); flex-wrap:wrap}
-  h1{font-size:var(--fs-md); font-weight:600; margin:0; letter-spacing:.2px; line-height:1.25}
-  /* Subtitle on its own line: the one-line version pushed the nav too far right. */
-  h1 span{display:block; color:var(--fg-dim); font-weight:400; font-size:var(--fs-xs)}
-  nav{display:flex; gap:var(--s-1); flex-wrap:wrap}
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #fbfbfc;
+        --line: #e1e4e9;
+        --fg: #1a1d23;
+        --fg-dim: #5c6675;
+        --accent: #1f6feb;
+        --accent-2: #b07800;
+        --tab-bg: #f1f3f6;
+      }
+    }
 
-  /* .tab, select and .vote are one family of controls: same border, radius, resting
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font: var(--fs-base)/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif
+    }
+
+    /* The header sits over scrolling banknotes, so it needs an edge of its own --
+     without one the notes slide up and touch the tabs. A hairline, not a shadow:
+     the page is flat everywhere else. */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      padding: var(--s-3) var(--s-10)
+    }
+
+    /* No flex-wrap: a wrapping header is a broken header. Below the breakpoint where
+     everything fits, the nav scrolls sideways instead (see nav overflow below). */
+    .row {
+      display: flex;
+      align-items: center;
+      gap: var(--s-5);
+      min-width: 0
+    }
+
+    h1 {
+      font-size: var(--fs-lg);
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: -.2px;
+      line-height: 1.2;
+      white-space: nowrap
+    }
+
+    /* Subtitle on its own line: the one-line version pushed the nav too far right. */
+    h1 span {
+      display: block;
+      color: var(--fg-dim);
+      font-weight: 400;
+      font-size: var(--fs-xs);
+      letter-spacing: 0
+    }
+
+    /* A-J is one control, Compare/Contest is another. The gap between the groups is
+     wider than the gap inside them, so the row reads as two things, not twelve. */
+    /* overflow-x:auto forces overflow-y to auto too (visible is not honoured on one
+     axis alone), which clips the tabs' 2px focus ring. Padding inside the scroller
+     is what actually makes room for it. */
+    nav {
+      display: flex;
+      gap: var(--s-4);
+      min-width: 0;
+      overflow-x: auto;
+      padding-block: 3px;
+      scrollbar-width: none;
+      -ms-overflow-style: none
+    }
+
+    nav::-webkit-scrollbar {
+      display: none
+    }
+
+    .navgroup {
+      display: flex;
+      gap: var(--s-1);
+      flex: 0 0 auto
+    }
+
+    /* .tab, select and .vote are one family of controls: same border, radius, resting
      fill and fill-on-hover. Only their sizing differs, which is what the individual
      rules below carry. 1px borders and the 2px focus ring stay in px on purpose --
      rem-scaling a hairline makes it blur at fractional device pixel ratios. */
-  .tab, select, .vote{appearance:none; border:1px solid var(--line);
-                      border-radius:var(--radius); background:var(--tab-bg);
-                      color:var(--fg-dim); cursor:pointer; transition:.12s}
-  .tab:hover, select:hover, .vote:hover{border-color:var(--accent)}
-  .tab:hover, .vote:hover{background:var(--accent); color:#fff}
-  select:hover{color:var(--accent)}
-  .tab:focus-visible, select:focus-visible, .vote:focus-visible{
-    outline:2px solid var(--accent); outline-offset:1px}
+    .tab,
+    select,
+    .vote {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--tab-bg);
+      color: var(--fg-dim);
+      cursor: pointer;
+      transition: .12s
+    }
 
-  .tab{min-width:var(--ctl-h); height:var(--ctl-h); padding:0 var(--s-2);
-       font:500 var(--fs-md)/1 system-ui}
-  .tab.wide{padding:0 var(--s-3)}
-  /* Contest is the one thing here you *do*, not just look at, so it carries an accent
+    .tab:hover,
+    select:hover,
+    .vote:hover {
+      border-color: var(--accent)
+    }
+
+    .tab:hover,
+    .vote:hover {
+      background: var(--accent);
+      color: #fff
+    }
+
+    select:hover {
+      color: var(--accent)
+    }
+
+    .tab:focus-visible,
+    select:focus-visible,
+    .vote:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px
+    }
+
+    .tab {
+      min-width: var(--ctl-h);
+      height: var(--ctl-h);
+      padding: 0 var(--s-2);
+      font: 500 var(--fs-md)/1 system-ui
+    }
+
+    .tab.wide {
+      padding: 0 var(--s-3)
+    }
+
+    /* Contest is the one thing here you *do*, not just look at, so it carries an accent
      tint at rest. Declared before :hover/.active so those still win. */
-  .tab.spark{border-color:var(--accent); color:var(--accent)}
-  .tab.active{background:var(--accent); border-color:var(--accent);
-              color:#fff; font-weight:650}
-  .spacer{flex:1}
-  /* The nav is the main control, so give it more presence once there is room for it.
-     1350px is where the bigger tabs still clear the title and the controls on one row.
-     Breakpoints stay in px: they are tuned to real device widths, and em would move
-     them under browser zoom. */
-  @media (min-width:1350px){
-    /* Centred on the header, not on the space left over: the h1 and the controls
-       flanking it differ in width, so two flex spacers would sit it off-centre. */
-    .row{position:relative}
-    /* nowrap: an absolutely positioned flex box sizes to its containing block, not its
-       content, so it would wrap mid-row at any width. */
-    nav{position:absolute; left:50%; transform:translateX(-50%); gap:var(--s-2);
-        flex-wrap:nowrap}
-    .tab{min-width:var(--ctl-h-lg); height:var(--ctl-h-lg); padding:0 var(--s-3);
-         font-size:var(--fs-lg)}
-    .tab.wide{padding:0 var(--s-5)}
-  }
-  /* The chevron is a background image rather than a wrapper + pseudo-element:
+    .tab.spark {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 650
+    }
+
+    /* The nav is the main control and takes the slack; the title and the right-hand
+     controls keep their intrinsic width. This replaces the two .spacer elements --
+     one flex child that grows centres the nav just as well and, unlike the absolute
+     positioning this used to need, still reserves real space in the row. */
+    /* justify-content:center would clip the left edge once the content overflows a
+     scroll container, so centre with auto margins instead: they collapse to zero
+     when there is no slack, leaving the nav flush-left and scrollable. */
+    .row>nav {
+      flex: 1 1 auto
+    }
+
+    .rowend {
+      display: flex;
+      align-items: center;
+      gap: var(--s-4);
+      flex: 0 0 auto
+    }
+
+    /* Bigger tabs once there is room. 1350px is where they still clear the title and
+     the controls on one row. Breakpoints stay in px: they are tuned to real device
+     widths, and em would move them under browser zoom. */
+    @media (min-width:1350px) {
+      .tab {
+        min-width: var(--ctl-h-lg);
+        height: var(--ctl-h-lg);
+        padding: 0 var(--s-3);
+        font-size: var(--fs-lg)
+      }
+
+      .tab.wide {
+        padding: 0 var(--s-5)
+      }
+    }
+
+    /* Below that, the controls are the first thing to cost more than they are worth:
+     drop the zoom label to its icon-free minimum and let the nav have the room. */
+    /* Between 768 and 1200 the row is full but not yet roomy. Tighten the gaps and
+     drop the "Zoom" word (the slider is self-evident, and its aria-label carries
+     the name for screen readers) rather than let the nav start scrolling. */
+    @media (max-width:1200px) {
+      .row {
+        gap: var(--s-4)
+      }
+
+      nav {
+        gap: var(--s-3)
+      }
+
+      .rowend {
+        gap: var(--s-3)
+      }
+
+      .ctl.size {
+        font-size: 0
+      }
+
+      .ctl.size input {
+        margin-left: 0
+      }
+    }
+
+    /* The chevron is a background image rather than a wrapper + pseudo-element:
      appearance:none drops the native arrow. Its 9px offset and size are optical,
      tied to that specific glyph, so they stay in px. */
-  select{color:var(--fg); font:inherit; font-size:var(--fs-sm);
-         height:var(--ctl-h-sm); padding:0 var(--s-6) 0 var(--s-2);
-         background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-         background-repeat:no-repeat; background-position:right 9px center; background-size:9px}
-  /* The dropdown list itself is painted by the OS, so it needs explicit colours in dark mode. */
-  select option{background:var(--bg); color:var(--fg)}
-  input[type=range]{accent-color:var(--accent); background:none; border:0; width:var(--s-20)}
-  label.ctl{display:flex; align-items:center; gap:var(--s-2);
-            font-size:var(--fs-sm); color:var(--fg-dim)}
-  /* Inline variants of the two control rows, used inside .meta copy. */
-  .ctl.inline, .btnrow.inline{display:inline-flex; margin:0 0 0 var(--s-3)}
+    /* Same height as .tab and .vote: three control heights on one baseline read as
+     an accident. */
+    select {
+      color: var(--fg);
+      font: inherit;
+      font-size: var(--fs-sm);
+      height: var(--ctl-h);
+      padding: 0 var(--s-6) 0 var(--s-3);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 9px center;
+      background-size: 9px
+    }
 
-  main{padding:var(--s-6) var(--s-10) var(--s-20); margin:0 auto}
-  .meta{margin:0 0 var(--s-10)}
-  .meta h2{margin:0 0 var(--s-2); font-size:var(--fs-2xl); font-weight:600;
-           letter-spacing:-.4px}
-  .meta p{margin:0; color:var(--fg-dim); font-size:var(--fs-md)}
-  .meta a{color:var(--accent)}
-  /* Separated by whitespace alone -- the middots read as punctuation next to a 26px
+    /* The select grows with the tabs, or it sits 8px short on the same baseline. Must
+     come after the base select rule above, which sets the smaller height. */
+    @media (min-width:1350px) {
+      select {
+        height: var(--ctl-h-lg)
+      }
+    }
+
+    /* The dropdown list itself is painted by the OS, so it needs explicit colours in dark mode. */
+    select option {
+      background: var(--bg);
+      color: var(--fg)
+    }
+
+    input[type=range] {
+      accent-color: var(--accent);
+      background: none;
+      border: 0;
+      width: var(--s-20)
+    }
+
+    label.ctl {
+      display: flex;
+      align-items: center;
+      gap: var(--s-2);
+      font-size: var(--fs-sm);
+      color: var(--fg-dim)
+    }
+
+    /* Inline variants of the two control rows, used inside .meta copy. */
+    .ctl.inline,
+    .btnrow.inline {
+      display: inline-flex;
+      margin: 0 0 0 var(--s-3)
+    }
+
+    main {
+      padding: var(--s-6) var(--s-10) var(--s-20);
+      margin: 0 auto
+    }
+
+    .meta {
+      margin: 0 0 var(--s-10)
+    }
+
+    .meta h2 {
+      margin: 0 0 var(--s-2);
+      font-size: var(--fs-2xl);
+      font-weight: 600;
+      letter-spacing: -.4px
+    }
+
+    .meta p {
+      margin: 0;
+      color: var(--fg-dim);
+      font-size: var(--fs-md)
+    }
+
+    .meta a {
+      color: var(--accent)
+    }
+
+    /* Separated by whitespace alone -- the middots read as punctuation next to a 26px
      title, so the gap does the dividing instead. The 2px lift is optical, not spacing. */
-  .badge{display:inline-block; font-size:var(--fs-sm); font-weight:400;
-         color:var(--fg-dim); margin-left:var(--s-5); vertical-align:2px}
+    .badge {
+      display: inline-block;
+      font-size: var(--fs-sm);
+      font-weight: 400;
+      color: var(--fg-dim);
+      margin-left: var(--s-5);
+      vertical-align: 2px
+    }
 
-  .grid{display:grid; gap:var(--s-12) var(--s-8);
-        grid-template-columns:repeat(var(--cols),1fr); align-items:stretch}
-  /* ponytail: figures stretch to their row height; the .pair takes up the slack and
+    .grid {
+      display: grid;
+      gap: var(--s-12) var(--s-8);
+      grid-template-columns: repeat(var(--cols), 1fr);
+      align-items: stretch
+    }
+
+    /* ponytail: figures stretch to their row height; the .pair takes up the slack and
      centres its panes in it, so the caption keeps its natural height at the bottom. */
-  figure{margin:0; display:flex; flex-direction:column}
-  /* .pair.h is a column and .pair.v a row, so centring the panes vertically means
-     justify-content in the one case and align-items in the other. */
-  figure > .pair{flex:1 1 auto}
-  figure > .pair.h{justify-content:center}
-  figure > .pair.v{align-items:center}
-  figure > figcaption{flex:0 0 auto}
+    figure {
+      margin: 0;
+      display: flex;
+      flex-direction: column
+    }
 
-  /* one box per denomination, holding both sides */
-  .pair{display:flex; gap:var(--s-4); position:relative}
-  .pair.h{flex-direction:column}   /* landscape note -> sides stacked      */
-  .pair.v{flex-direction:row}      /* portrait note  -> sides side by side */
-  /* Proposal view: the notes are shown at their real relative size. The 200 fills
+    /* .pair.h is a column and .pair.v a row, so centring the panes vertically means
+     justify-content in the one case and align-items in the other. */
+    figure>.pair {
+      flex: 1 1 auto
+    }
+
+    figure>.pair.h {
+      justify-content: center
+    }
+
+    figure>.pair.v {
+      align-items: center
+    }
+
+    figure>figcaption {
+      flex: 0 0 auto
+    }
+
+    /* one box per denomination, holding both sides */
+    .pair {
+      display: flex;
+      gap: var(--s-4);
+      position: relative
+    }
+
+    .pair.h {
+      flex-direction: column
+    }
+
+    /* landscape note -> sides stacked      */
+    .pair.v {
+      flex-direction: row
+    }
+
+    /* portrait note  -> sides side by side */
+    /* Proposal view: the notes are shown at their real relative size. The 200 fills
      the card, smaller denominations are narrower by their width ratio (see
      Groessenverhaeltnisse_Euro-Banknoten.csv) and centred. Width only -- the pane
      aspect ratio takes care of the height, for both orientations: a portrait pair
      is a row of two panes, so its width shrinks with the box.
      .square is the opposite case (compare/rank/contest), so this is everything else. */
-  .grid:not(.square) .pair{width:calc(100% * var(--scale,1)); margin-inline:auto}
-  /* Every pane carries the aspect ratio of the note AS DISPLAYED, in --ar and
+    .grid:not(.square) .pair {
+      width: calc(100% * var(--scale, 1));
+      margin-inline: auto
+    }
+
+    /* Every pane carries the aspect ratio of the note AS DISPLAYED, in --ar and
      aspect-ratio. Sizing one axis is then enough, in any of the layouts below. */
-  /* container-type: the hover caption scales with the pane, which ranges from a thumbnail
+    /* container-type: the hover caption scales with the pane, which ranges from a thumbnail
      in the rank grid to a full-width note at max zoom. inline-size only -- size would need
      the height to be independent of the content, and the img is what sets it. */
-  .pane{position:relative; flex:1 1 0; min-width:0; display:block; container-type:inline-size}
-  /* Landscape pairs stack, so grow would inflate the pane boxes past the note's aspect
+    .pane {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      display: block;
+      container-type: inline-size
+    }
+
+    /* Landscape pairs stack, so grow would inflate the pane boxes past the note's aspect
      ratio; keep them at content height and let the .pair centre them in the spare row
      height instead. Portrait pairs are a row and still need grow to split the width
      (a .rot pane has no intrinsic width at all -- its image is absolute). */
-  .pair.h > .pane{flex:0 1 auto}
-  .pane img{width:100%; height:auto; display:block;
-            cursor:zoom-in; background:#fff;box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);}
-  /* Proposal D's reverse images are served landscape although the design is portrait
+    .pair.h>.pane {
+      flex: 0 1 auto
+    }
+
+    .pane img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: zoom-in;
+      background: #fff;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+
+    /* Proposal D's reverse images are served landscape although the design is portrait
      (no EXIF orientation flag). Rotate them 90 deg CW in the layout: the image is laid
      out as wide as the pane is tall, then turned onto its corner. */
-  .pane.rot img{position:absolute; top:0; left:0; width:calc(100% / var(--ar)); height:auto;
-                max-width:none; transform-origin:0 0; transform:rotate(90deg) translateY(-100%)}
-  /* Hover caption: a backdrop over the note itself, label centred in it. .rot panes are
+    .pane.rot img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: calc(100% / var(--ar));
+      height: auto;
+      max-width: none;
+      transform-origin: 0 0;
+      transform: rotate(90deg) translateY(-100%)
+    }
+
+    /* Hover caption: a backdrop over the note itself, label centred in it. .rot panes are
      turned in the layout but the overlay is not -- it sits in the pane box, which already
      carries the displayed (upright) aspect ratio. */
-  .pane .lbl{position:absolute; inset:0; display:flex; flex-direction:column;
-             align-items:center; justify-content:center; gap:.35em; text-align:center;
-             background:rgba(10,12,16,.55); backdrop-filter:blur(2px);
-             opacity:0; transition:opacity .18s; pointer-events:none}
-  .pane:hover .lbl{opacity:1}
-  .lbl .l{font:700 clamp(22px,5cqw,38px)/1 system-ui; color:#fff; letter-spacing:.5px}
-  .lbl .d{font:400 clamp(13px,2.4cqw,18px)/1 system-ui; color:#fff}
-  .lbl .s{font:400 clamp(9px,1.5cqw,11px)/1 system-ui; letter-spacing:1.4px;
-          text-transform:uppercase; color:rgba(255,255,255,.5)}
+    .pane .lbl {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .35em;
+      text-align: center;
+      background: rgba(10, 12, 16, .55);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      transition: opacity .18s;
+      pointer-events: none
+    }
 
-  /* Turn a portrait pair on its side. Rotating alone would leave the pair's box at its
+    .pane:hover .lbl {
+      opacity: 1
+    }
+
+    .lbl .l {
+      font: 700 clamp(22px, 5cqw, 38px)/1 system-ui;
+      color: #fff;
+      letter-spacing: .5px
+    }
+
+    .lbl .d {
+      font: 400 clamp(13px, 2.4cqw, 18px)/1 system-ui;
+      color: #fff
+    }
+
+    .lbl .s {
+      font: 400 clamp(9px, 1.5cqw, 11px)/1 system-ui;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .5)
+    }
+
+    /* Turn a portrait pair on its side. Rotating alone would leave the pair's box at its
      upright size, so the turned notes would overlap the neighbours: the pair is a row of
      two portrait notes, hence wider than tall once turned. --turn-k (set from JS as the
      pair's width/height) scales the turned long edge back inside the old width, and a
      negative margin gives back the height that frees up -- see the JS. */
-  .pair.turn{transform:rotate(-90deg) scale(var(--turn-k,1)); transition:transform .25s}
-  /* Anchored to the figure, not the pair: inside the pair it would ride the rotation and
+    .pair.turn {
+      transform: rotate(-90deg) scale(var(--turn-k, 1));
+      transition: transform .25s
+    }
+
+    /* Anchored to the figure, not the pair: inside the pair it would ride the rotation and
      swing off to the side. The figure also spans the caption, so centre on the pair's own
      box (--turn-top, its centre offset within the figure) rather than on 50% of the figure. */
-  figure{position:relative}
-  .turnbtn{position:absolute; left:50%; top:var(--turn-top,50%); translate:-50% -50%; z-index:3;
-           width:var(--s-10); height:var(--s-10);
-           display:grid; place-items:center; border:0; border-radius:50%; padding:0;
-           background:rgba(10,12,16,.6); backdrop-filter:blur(2px);
-           color:#fff; font:var(--s-5)/1 system-ui; cursor:pointer;
-           opacity:0; transition:opacity .18s}
-  /* Keyboard users never hover, so focus has to reveal it too. */
-  figure:hover .turnbtn, .turnbtn:focus-visible{opacity:1}
-  .turnbtn:hover{background:var(--accent)}
+    figure {
+      position: relative
+    }
 
-  /* Compare and ranking: every card is a square, so a note is rendered at the same
+    .turnbtn {
+      position: absolute;
+      left: 50%;
+      top: var(--turn-top, 50%);
+      translate: -50% -50%;
+      z-index: 3;
+      width: var(--s-10);
+      height: var(--s-10);
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      padding: 0;
+      background: rgba(10, 12, 16, .6);
+      backdrop-filter: blur(2px);
+      color: #fff;
+      font: var(--s-5)/1 system-ui;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity .18s
+    }
+
+    /* Keyboard users never hover, so focus has to reveal it too. */
+    figure:hover .turnbtn,
+    .turnbtn:focus-visible {
+      opacity: 1
+    }
+
+    .turnbtn:hover {
+      background: var(--accent)
+    }
+
+    /* Compare and ranking: every card is a square, so a note is rendered at the same
      scale whether its design is landscape or portrait (long edge = the square
      side minus padding and gap, in both cases). Keeps the grid rows even too. */
-  /* One gap for both orientations, declared on the pair so it inherits to the panes, which
+    /* One gap for both orientations, declared on the pair so it inherits to the panes, which
      subtract it from the square. It costs landscape nothing (those notes are capped by the
      square's width, so the gap only eats spare vertical slack) but costs portrait directly
      (two notes side by side split the square's width), so it is kept small. */
-  /* --long is the long edge every note gets, whatever its orientation, so a landscape note
+    /* --long is the long edge every note gets, whatever its orientation, so a landscape note
      and a portrait one come out the same size on screen. Portrait is the tighter of the
      two: its pair splits the square's width, so each note is (100% - gap)/2 wide and
      (100% - gap)/2/AR long. --ar-portrait is that limiting portrait ratio, set from JS
      (the proposals do not share one aspect ratio, so it cannot be a constant here); the
      fallback is the nominal euro format for the moment before the images have loaded. */
-  /* .square is set alongside cmp/rank/contest from JS -- those three share this whole
+    /* .square is set alongside cmp/rank/contest from JS -- those three share this whole
      block, and naming the shared behaviour once beats repeating the three-way list. */
-  .grid.square .pair{aspect-ratio:1; align-items:center; justify-content:center;
-                     --gap:var(--s-4); gap:var(--gap);
-                     --long:calc((100% - var(--gap))/2 / var(--ar-portrait,.5169))}
-  .grid.square .pane{flex:0 0 auto; max-width:100%; max-height:100%}
-  /* Stacked: a landscape note's long edge is its width, so hold that to --long. Also cap
+    .grid.square .pair {
+      aspect-ratio: 1;
+      align-items: center;
+      justify-content: center;
+      --gap: var(--s-4);
+      gap: var(--gap);
+      --long: calc((100% - var(--gap))/2 / var(--ar-portrait, .5169))
+    }
+
+    .grid.square .pane {
+      flex: 0 0 auto;
+      max-width: 100%;
+      max-height: 100%
+    }
+
+    /* Stacked: a landscape note's long edge is its width, so hold that to --long. Also cap
      the height at half the square (minus the gap), or a squarer note would fit the width
      but the two panes would not fit the square vertically. */
-  .grid.square .pair.two.h .pane{width:min(var(--long), 100%,
-                                           ((100% - var(--gap))/2) * var(--ar,1));
-                                 height:auto}
-  /* Alongside: the two notes split the square's width. Two portrait notes at the full
+    .grid.square .pair.two.h .pane {
+      width: min(var(--long), 100%,
+          ((100% - var(--gap))/2) * var(--ar, 1));
+      height: auto
+    }
+
+    /* Alongside: the two notes split the square's width. Two portrait notes at the full
      square height would need more width than the square has, so the pair limits them and
      they end up slightly smaller than landscape ones -- the gap above is what keeps that
      difference small. */
-  .grid.square .pair.two.v .pane{width:calc((100% - var(--gap))/2)}
-  /* single side: fit the note into the square by its longer edge, held to the same --long
+    .grid.square .pair.two.v .pane {
+      width: calc((100% - var(--gap))/2)
+    }
+
+    /* single side: fit the note into the square by its longer edge, held to the same --long
      budget so one-sided cards match the two-sided ones. */
-  .grid.square .pair.one .pane{width:calc(var(--long) * min(1, var(--ar,1)))}
+    .grid.square .pair.one .pane {
+      width: calc(var(--long) * min(1, var(--ar, 1)))
+    }
 
-  figcaption{padding:var(--s-4) 0 0; display:flex; justify-content:center;
-             align-items:baseline; gap:var(--s-2); color:var(--fg-dim);
-             font-size:var(--fs-sm); letter-spacing:.4px}
-  figcaption b{font-weight:500}
+    figcaption {
+      padding: var(--s-4) 0 0;
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: var(--s-2);
+      color: var(--fg-dim);
+      font-size: var(--fs-sm);
+      letter-spacing: .4px
+    }
 
-  /* Contest: two candidates side by side, each a normal note box plus a vote button.
+    figcaption b {
+      font-weight: 500
+    }
+
+    /* Contest: two candidates side by side, each a normal note box plus a vote button.
      Below 700px they stack, so a note is never squeezed to thumbnail size on a phone.
      1100px is a layout ceiling tied to the note grid, not to text, so it stays in px. */
-  .grid.contest{grid-template-columns:repeat(2,1fr); max-width:1100px; margin:0 auto}
-  @media (max-width:700px){ .grid.contest{grid-template-columns:1fr} }
-  .grid.contest figcaption{flex-direction:column; align-items:stretch; gap:var(--s-4)}
-  /* Chrome and hover come from the shared control rule above; the vote only differs in
+    .grid.contest {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 1100px;
+      margin: 0 auto
+    }
+
+    @media (max-width:700px) {
+      .grid.contest {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .grid.contest figcaption {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--s-4)
+    }
+
+    /* Chrome and hover come from the shared control rule above; the vote only differs in
      sizing -- it spans the candidate's column. */
-  .vote{padding:var(--s-3) var(--s-4); font:500 var(--fs-md)/1 system-ui; width:100%}
-  .vote small{color:var(--fg-dim)}
-  .vote:hover small{color:#fff}
+    .vote {
+      padding: var(--s-3) var(--s-4);
+      font: 500 var(--fs-md)/1 system-ui;
+      width: 100%
+    }
 
-  .grid.rank{grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); max-width:1100px;
-             margin:var(--s-6) auto 0}
-  .grid.rank figure{position:relative}
-  .grid.rank figure.link{cursor:pointer}
-  .grid.rank figure.link:hover figcaption{color:var(--accent)}
-  .grid.rank .pos{position:absolute; left:0; top:calc(var(--s-6) * -1); z-index:2;
-                  font:600 var(--fs-sm)/1 system-ui; color:var(--fg-dim)}
-  .grid.rank figure.first .pos{color:var(--accent-2)}
-  .btnrow{display:flex; gap:var(--s-5); flex-wrap:wrap; margin-top:var(--s-4)}
-  .btn{appearance:none; border:0; background:none; color:var(--accent);
-       padding:0; font:inherit; font-size:var(--fs-sm); cursor:pointer}
-  .btn:hover{text-decoration:underline}
+    .vote small {
+      color: var(--fg-dim)
+    }
 
-  /* Viewport units below are deliberate: the lightbox sizes to the screen, not the scale. */
-  #lightbox{position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.93);
-            display:none; align-items:center; justify-content:center; flex-direction:column;
-            gap:var(--s-3); padding:var(--s-6)}
-  #lightbox.on{display:flex}
-  #lightbox img{max-width:96vw; max-height:84vh; object-fit:contain}
-  /* rotated note: swap the viewport constraints, the on-screen axes are swapped too */
-  #lightbox img.rot{max-width:84vh; max-height:96vw; transform:rotate(90deg)}
-  #lightbox .cap{color:#ddd; font-size:var(--fs-md)}
-  #lightbox .close{position:absolute; top:var(--s-4); right:var(--s-5); color:#ddd;
-                   font-size:var(--fs-xl); cursor:pointer; line-height:1}
-  .hint{color:var(--fg-dim); font-size:var(--fs-xs); line-height:1.9;
-        margin-top:var(--s-16)}
-  .hint a{color:inherit}
-  /* Keyboard shortcuts are noise without a keyboard. Keyed to the pointer, not the
+    .vote:hover small {
+      color: #fff
+    }
+
+    .grid.rank {
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      max-width: 1100px;
+      margin: var(--s-6) auto 0
+    }
+
+    .grid.rank figure {
+      position: relative
+    }
+
+    .grid.rank figure.link {
+      cursor: pointer
+    }
+
+    .grid.rank figure.link:hover figcaption {
+      color: var(--accent)
+    }
+
+    .grid.rank .pos {
+      position: absolute;
+      left: 0;
+      top: calc(var(--s-6) * -1);
+      z-index: 2;
+      font: 600 var(--fs-sm)/1 system-ui;
+      color: var(--fg-dim)
+    }
+
+    .grid.rank figure.first .pos {
+      color: var(--accent-2)
+    }
+
+    .btnrow {
+      display: flex;
+      gap: var(--s-5);
+      flex-wrap: wrap;
+      margin-top: var(--s-4)
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      background: none;
+      color: var(--accent);
+      padding: 0;
+      font: inherit;
+      font-size: var(--fs-sm);
+      cursor: pointer
+    }
+
+    .btn:hover {
+      text-decoration: underline
+    }
+
+    /* Viewport units below are deliberate: the lightbox sizes to the screen, not the scale. */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, .93);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: var(--s-3);
+      padding: var(--s-6)
+    }
+
+    #lightbox.on {
+      display: flex
+    }
+
+    #lightbox img {
+      max-width: 96vw;
+      max-height: 84vh;
+      object-fit: contain
+    }
+
+    /* rotated note: swap the viewport constraints, the on-screen axes are swapped too */
+    #lightbox img.rot {
+      max-width: 84vh;
+      max-height: 96vw;
+      transform: rotate(90deg)
+    }
+
+    #lightbox .cap {
+      color: #ddd;
+      font-size: var(--fs-md)
+    }
+
+    #lightbox .close {
+      position: absolute;
+      top: var(--s-4);
+      right: var(--s-5);
+      color: #ddd;
+      font-size: var(--fs-xl);
+      cursor: pointer;
+      line-height: 1
+    }
+
+    .hint {
+      color: var(--fg-dim);
+      font-size: var(--fs-xs);
+      line-height: 1.9;
+      margin-top: var(--s-16)
+    }
+
+    .hint a {
+      color: inherit
+    }
+
+    /* Keyboard shortcuts are noise without a keyboard. Keyed to the pointer, not the
      viewport: a small laptop window has one, a large tablet does not. */
-  @media (hover:none) and (pointer:coarse){ .keys{display:none} }
-  /* Below 740px there is no room for a second column, so the slider is inert -- hide it
+    @media (hover:none) and (pointer:coarse) {
+      .keys {
+        display: none
+      }
+    }
+
+    /* Below 740px there is no room for a second column, so the slider is inert -- hide it
      and force one column regardless of its value. Small tablets (iPad mini portrait,
      744px) clear that and keep the zoom. */
-  .bigscreen{display:none}
-  @media (max-width:739px){
-    .bigscreen{display:inline}
-    .ctl.size{display:none}
-    .grid{--cols:1}
-  }
-  @media (max-width:767px){
-    header{padding:var(--s-3) var(--s-5) var(--s-3)}
-    main{padding:var(--s-5) var(--s-5) var(--s-16)}
-    .grid{gap:var(--s-10) var(--s-6)}
-  }
-  kbd{color:var(--fg); font:var(--fs-xs)/1.4 ui-monospace,monospace}
-</style>
+    .bigscreen {
+      display: none
+    }
+
+    @media (max-width:739px) {
+      .bigscreen {
+        display: inline
+      }
+
+      .ctl.size {
+        display: none
+      }
+
+      .grid {
+        --cols: 1
+      }
+    }
+
+    /* Below 1100 the title plus the controls already fill the row, and a nav that only
+     flexes would collapse or get clipped. Give it its own row and let it scroll
+     sideways there. This is the one place the header is two rows, and it is deliberate. */
+    @media (max-width:1100px) {
+
+      /* h1 shrinks so the title and the controls stay on row one; the nav takes row two.
+       min-width:0 is what lets a nowrap flex item shrink below its content width. */
+      .row {
+        flex-wrap: wrap;
+        row-gap: var(--s-3)
+      }
+
+      h1 {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: var(--fs-md);
+        overflow: hidden;
+        text-overflow: ellipsis
+      }
+
+      h1 span {
+        overflow: hidden;
+        text-overflow: ellipsis
+      }
+
+      /* The zoom slider is already hidden under 740px; dropping its empty label too
+       buys the row enough width for the title and the controls to share it. */
+      .ctl.size {
+        display: none
+      }
+
+      .row>nav {
+        order: 3;
+        flex: 1 0 100%;
+        justify-content: flex-start
+      }
+
+      .navgroup:first-child {
+        margin-left: 0
+      }
+
+      .navgroup:last-child {
+        margin-right: 0
+      }
+
+      .rowend {
+        margin-left: auto
+      }
+
+      /* Nav scrolls edge to edge: a cut-off tab at the bezel reads as broken, padding
+       restores the header's own gutter inside the scroller. */
+      nav {
+        margin: 0 calc(var(--s-5) * -1);
+        padding: 0 var(--s-5)
+      }
+
+      header {
+        padding: var(--s-3) var(--s-5) var(--s-3)
+      }
+
+      main {
+        padding: var(--s-5) var(--s-5) var(--s-16)
+      }
+
+      .grid {
+        gap: var(--s-10) var(--s-6)
+      }
+    }
+
+    kbd {
+      color: var(--fg);
+      font: var(--fs-xs)/1.4 ui-monospace, monospace
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="row">
-    <h1>New Euro Banknotes <span>ECB design proposals</span></h1>
-    <span class="spacer"></span>
-    <nav id="nav"></nav>
-    <span class="spacer"></span>
-    <label class="ctl">
-      <select id="filter">
-        <option value="all">front + back</option>
-        <option value="front">front only</option>
-        <option value="back">back only</option>
-      </select>
-    </label>
-    <label class="ctl size">Zoom
-      <input type="range" id="size" min="0" max="5" step="1" value="3" list="colsteps"
-             aria-label="Zoom: how large the notes are shown">
-      <datalist id="colsteps"><option value="0"><option value="1"><option value="2"><option value="3"><option value="4"></datalist>
-    </label>
-    <button class="tab" id="share" title="Share this page">Share</button>
+  <header>
+    <div class="row">
+      <h1>New Euro Banknotes <span>ECB design proposals</span></h1>
+      <nav id="nav" aria-label="Proposals and views"></nav>
+      <div class="rowend">
+        <label class="ctl">
+          <select id="filter" aria-label="Which sides of the notes are shown">
+            <option value="all">front + back</option>
+            <option value="front">front only</option>
+            <option value="back">back only</option>
+          </select>
+        </label>
+        <!-- No list/datalist: step="1" already snaps to integers, and the datalist only
+           added browser-painted tick marks that CSS cannot suppress. -->
+        <label class="ctl size">Zoom
+          <input type="range" id="size" min="0" max="5" step="1" value="3"
+            aria-label="Zoom: how large the notes are shown">
+        </label>
+        <button class="tab" id="share" title="Share this page">Share</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="meta" id="meta"></div>
+    <div class="grid" id="grid"></div>
+    <p class="hint">
+      <span class="bigscreen">Best viewed on a larger screen.<br></span>
+      <span class="keys"><kbd>←</kbd> <kbd>→</kbd> switch proposal · <kbd>A</kbd>–<kbd>J</kbd> jump directly ·
+        <kbd>0</kbd> compare view · <kbd>9</kbd> contest · <kbd>Esc</kbd> closes it ·
+      </span>Click an image for the full-size view.<br>
+      <b>Contest</b> finds your favourite by pairwise votes;
+      your votes stay in this browser and are sent nowhere.<br>
+      An independent viewer, not affiliated with or endorsed by the ECB. <a
+        href="https://github.com/felixfischer/euro-banknote-proposals" target="_blank" rel="noopener">Source on
+        GitHub</a><br>
+      The designs are the work of their creators and are published by the
+      <a href="https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html" target="_blank"
+        rel="noopener">European Central Bank</a>.
+    </p>
+    <img src="https://umami.virgo.tuc.systems/p/CqIWXvw0Q" alt="">
+  </main>
+
+  <div id="lightbox"><span class="close" id="lbClose">×</span><img id="lbImg" alt="">
+    <div class="cap" id="lbCap"></div>
   </div>
-</header>
 
-<main>
-  <div class="meta" id="meta"></div>
-  <div class="grid" id="grid"></div>
-  <p class="hint">
-    <span class="bigscreen">Best viewed on a larger screen.<br></span>
-    <span class="keys"><kbd>←</kbd> <kbd>→</kbd> switch proposal · <kbd>A</kbd>–<kbd>J</kbd> jump directly ·
-    <kbd>0</kbd> compare view · <kbd>9</kbd> contest · <kbd>Esc</kbd> closes it ·
-    </span>Click an image for the full-size view.<br>
-    <b>Contest</b> finds your favourite by pairwise votes;
-    your votes stay in this browser and are sent nowhere.<br>
-    An independent viewer, not affiliated with or endorsed by the ECB. <a href="https://github.com/felixfischer/euro-banknote-proposals"
-       target="_blank" rel="noopener">Source on GitHub</a><br>
-    The designs are the work of their creators and are published by the
-    <a href="https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html"
-       target="_blank" rel="noopener">European Central Bank</a>.
-  </p>
-</main>
+  <script>
+    const BASE = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/shared/img";
+    const DENOMS = [5, 10, 20, 50, 100, 200];
+    // Physical width in mm per denomination; used to show the notes at their real
+    // relative size. Source: Groessenverhaeltnisse_Euro-Banknoten.csv
+    const WIDTH_MM = { 5: 120, 10: 127, 20: 133, 50: 140, 100: 147, 200: 153 };
+    const SIDES = ["front", "back"];
+    // Proposals whose notes are portrait; their two sides are shown next to each other.
+    const PORTRAIT = new Set(["D", "G", "I", "J"]);
 
-<div id="lightbox"><span class="close" id="lbClose">×</span><img id="lbImg" alt=""><div class="cap" id="lbCap"></div></div>
+    const PROPOSALS = {
+      A: { designer: "Studio Joost Grootens", theme: "European culture" },
+      B: { designer: "PunktFormStrich", theme: "Rivers and birds" },
+      C: { designer: "Neue Gestaltung GmbH", theme: "European culture" },
+      D: { designer: "Rudy Guedj and François Girard-Meunier", theme: "Rivers and birds" },
+      E: { designer: "Myrsini Vardopoulou", theme: "European culture" },
+      F: { designer: "Jan Robert Dünnweller", theme: "European culture" },
+      G: { designer: "Rubio & del Amo and Cruz más Cruz", theme: "European culture" },
+      H: { designer: "Atelier Goppel-Toperngpong", theme: "Rivers and birds" },
+      I: { designer: "Isabelle Daëron", theme: "Rivers and birds" },
+      J: { designer: "Ville Tietäväinen", theme: "Rivers and birds" }
+    };
+    const LETTERS = Object.keys(PROPOSALS);
+    const SRC_PAGE = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html";
 
-<script>
-const BASE   = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/shared/img";
-const DENOMS = [5,10,20,50,100,200];
-// Physical width in mm per denomination; used to show the notes at their real
-// relative size. Source: Groessenverhaeltnisse_Euro-Banknoten.csv
-const WIDTH_MM = {5:120, 10:127, 20:133, 50:140, 100:147, 200:153};
-const SIDES  = ["front","back"];
-// Proposals whose notes are portrait; their two sides are shown next to each other.
-const PORTRAIT = new Set(["D","G","I","J"]);
+    const sideLabel = s => s === "front" ? "Front" : "Back";
+    const localPath = (L, d, s) => `images/${L}/${L}-${d}-${s}.jpg`;
+    const remotePath = (L, d, s) => `${BASE}/banknote-design-proposal-${L.toLowerCase()}-${d}-${s}.jpg`;
 
-const PROPOSALS = {
-  A:{designer:"Studio Joost Grootens",                  theme:"European culture"},
-  B:{designer:"PunktFormStrich",                        theme:"Rivers and birds"},
-  C:{designer:"Neue Gestaltung GmbH",                   theme:"European culture"},
-  D:{designer:"Rudy Guedj and François Girard-Meunier", theme:"Rivers and birds"},
-  E:{designer:"Myrsini Vardopoulou",                    theme:"European culture"},
-  F:{designer:"Jan Robert Dünnweller",                  theme:"European culture"},
-  G:{designer:"Rubio & del Amo and Cruz más Cruz",      theme:"European culture"},
-  H:{designer:"Atelier Goppel-Toperngpong",             theme:"Rivers and birds"},
-  I:{designer:"Isabelle Daëron",                        theme:"Rivers and birds"},
-  J:{designer:"Ville Tietäväinen",                      theme:"Rivers and birds"}
-};
-const LETTERS = Object.keys(PROPOSALS);
-const SRC_PAGE = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html";
+    let current = "A";
+    let cmpDenom = 5;
 
-const sideLabel  = s => s === "front" ? "Front" : "Back";
-const localPath  = (L,d,s) => `images/${L}/${L}-${d}-${s}.jpg`;
-const remotePath = (L,d,s) => `${BASE}/banknote-design-proposal-${L.toLowerCase()}-${d}-${s}.jpg`;
+    const $ = s => document.querySelector(s);
+    const grid = $("#grid"), meta = $("#meta");
 
-let current = "A";
-let cmpDenom = 5;
+    function buildNav() {
+      const nav = $("#nav");
+      // Two groups: pick a proposal, or pick a view across all of them. The wider gap
+      // between the groups is what tells them apart, so they need separate wrappers.
+      const proposals = document.createElement("div");
+      proposals.className = "navgroup";
+      const views = document.createElement("div");
+      views.className = "navgroup";
 
-const $ = s => document.querySelector(s);
-const grid = $("#grid"), meta = $("#meta");
+      LETTERS.forEach(L => {
+        const b = document.createElement("button");
+        b.className = "tab";
+        b.textContent = L; b.dataset.k = L;
+        b.title = `Proposal ${L}`;
+        b.onclick = () => show(L);
+        proposals.appendChild(b);
+      });
+      const c = document.createElement("button");
+      c.className = "tab wide"; c.textContent = "Compare"; c.dataset.k = "cmp";
+      c.title = "Compare all proposals";
+      c.onclick = () => show("cmp");
+      views.appendChild(c);
+      const t = document.createElement("button");
+      t.className = "tab wide spark"; t.textContent = "Contest"; t.dataset.k = "contest";
+      t.title = "Which design wins? Vote your way to a personal ranking";
+      t.onclick = () => show("contest");
+      views.appendChild(t);
 
-function buildNav(){
-  const nav = $("#nav");
-  LETTERS.forEach(L=>{
-    const b = document.createElement("button");
-    b.className = "tab";
-    b.textContent = L; b.dataset.k = L;
-    b.title = `Proposal ${L}`;
-    b.onclick = () => show(L);
-    nav.appendChild(b);
-  });
-  const c = document.createElement("button");
-  c.className = "tab wide"; c.textContent = "Compare"; c.dataset.k = "cmp";
-  c.title = "Compare all proposals";
-  c.onclick = () => show("cmp");
-  nav.appendChild(c);
-  const t = document.createElement("button");
-  t.className = "tab wide spark"; t.innerHTML = "✨ Contest"; t.dataset.k = "contest";
-  t.title = "Which design wins? Vote your way to a personal ranking";
-  t.onclick = () => show("contest");
-  nav.appendChild(t);
-}
-
-/* The compare/rank/contest cards size every note against one long edge (--long) so that a
-   landscape note and a portrait one come out equally large. Portrait sets that budget,
-   because two portrait notes side by side are what the square constrains hardest. The
-   proposals do not share one aspect ratio, so take the narrowest portrait note on screen:
-   sizing to any wider one would let it overflow its half of the square. Reset per view;
-   images decode asynchronously, so this only ever tightens as they arrive. */
-let portraitAr = 0;
-function notePortraitAr(ar){
-  if(portraitAr && ar >= portraitAr) return;
-  portraitAr = ar;
-  grid.style.setProperty("--ar-portrait", ar);
-}
-
-function pane(L,d,side){
-  const p = document.createElement("div");
-  p.className = "pane";
-  const img = new Image();
-  img.loading = "lazy";
-  img.alt = `Proposal ${L}, ${d} €, ${sideLabel(side).toLowerCase()}`;
-  img.dataset.remote = remotePath(L,d,side);
-  img.onerror = () => {
-    if(img.src !== img.dataset.remote){ img.src = img.dataset.remote; return; }  // fall back to the ECB copy
-    const fig = p.closest("figure");
-    p.remove();
-    if(fig && !fig.querySelector(".pane")) fig.remove();   // nothing left to show
-  };
-  // A portrait design served as a landscape file has no EXIF orientation flag.
-  // Detect it from the decoded size and rotate in the layout instead of touching the file.
-  img.onload = () => {
-    const nw = img.naturalWidth, nh = img.naturalHeight;
-    const rot = PORTRAIT.has(L) && nw > nh;
-    const dw = rot ? nh : nw, dh = rot ? nw : nh;   // dimensions as displayed
-    p.classList.toggle("rot", rot);
-    p.style.setProperty("--ar", dw / dh);
-    p.style.aspectRatio = `${dw} / ${dh}`;
-    if(dw < dh) notePortraitAr(dw / dh);            // portrait: feeds the shared --long
-  };
-  img.src = localPath(L,d,side);
-  img.onclick = () => openLB(img);
-  const lbl = document.createElement("span");
-  lbl.className = "lbl";
-  lbl.innerHTML = `<span class="l">${L} ${d}</span>` +
-                  `<span class="s">${sideLabel(side)}</span>`;
-  p.append(img, lbl);
-  return p;
-}
-
-/* Turn a portrait pair onto its side. Rotation does not affect layout, so the turned pair
-   would spill over its neighbours; scale it down by its own aspect ratio so the turned long
-   edge fits the width it had, and shrink the reserved height to match (a rotated box that
-   is k*height wide and k*width tall only needs k*width of row height). */
-function turnButton(pair, fig){
-  const b = document.createElement("button");
-  b.className = "turnbtn";
-  b.textContent = "⟳";
-  b.title = "Turn the note sideways";
-  b.setAttribute("aria-label", "Turn the note sideways");
-  // The button sits on the figure, which also spans the caption; centre it on the visible
-  // note area instead, i.e. the pair's own box (whose height changes when turned).
-  const centre = () => {
-    const p = pair.getBoundingClientRect(), f = fig.getBoundingClientRect();
-    const h = pair.classList.contains("turn") ? p.height + parseFloat(pair.style.marginBottom || 0)
-                                              : p.height;
-    b.style.setProperty("--turn-top", (p.top - f.top + h / 2) + "px");
-  };
-  b.onclick = () => {
-    const on = !pair.classList.contains("turn");
-    if(on){
-      const r = pair.getBoundingClientRect();
-      // Turned, the box is r.height wide and r.width tall. Scale so the new width fits the
-      // old one, then pull in the leftover height with a negative margin -- the pair's own
-      // box must keep its size, or the panes reflow and fight the rotation.
-      const k = Math.min(1, r.width / r.height);
-      pair.style.setProperty("--turn-k", k);
-      pair.style.marginBottom = (r.width * k - r.height) + "px";
-    }else{
-      pair.style.removeProperty("--turn-k");
-      pair.style.removeProperty("margin-bottom");
+      nav.append(proposals, views);
     }
-    pair.classList.toggle("turn", on);
-    b.setAttribute("aria-pressed", on);
-    centre();
-  };
-  // Images decode after the button is built, so the pair has no height yet. Recentre when
-  // the pointer reaches the figure -- that is what reveals the button, and by then the
-  // layout is settled. Cheap enough to just redo on every enter.
-  fig.addEventListener("pointerenter", centre);
-  return b;
-}
 
-// one figure per denomination, both sides inside.
-// captionless: the proposal view names the proposal in its heading, so a per-card
-// "Proposal A" under every note is just repetition -- skip the caption there.
-function noteBox(L,d,filter,captionless){
-  const fig = document.createElement("figure");
-  const pair = document.createElement("div");
-  const shown = SIDES.filter(s => filter === "all" || filter === s);
-  pair.className = `pair ${PORTRAIT.has(L) ? "v" : "h"} ${shown.length === 2 ? "two" : "one"}`;
-  pair.style.setProperty("--scale", WIDTH_MM[d] / WIDTH_MM[200]);
-  shown.forEach(s => pair.appendChild(pane(L,d,s)));
+    /* The compare/rank/contest cards size every note against one long edge (--long) so that a
+       landscape note and a portrait one come out equally large. Portrait sets that budget,
+       because two portrait notes side by side are what the square constrains hardest. The
+       proposals do not share one aspect ratio, so take the narrowest portrait note on screen:
+       sizing to any wider one would let it overflow its half of the square. Reset per view;
+       images decode asynchronously, so this only ever tightens as they arrive. */
+    let portraitAr = 0;
+    function notePortraitAr(ar) {
+      if (portraitAr && ar >= portraitAr) return;
+      portraitAr = ar;
+      grid.style.setProperty("--ar-portrait", ar);
+    }
 
-  fig.append(pair);
-  if(!captionless){
-    const cap = document.createElement("figcaption");
-    cap.innerHTML = `<b>Proposal ${L}</b>`;
-    fig.append(cap);
-  }
-  // After the pair, so it stacks above it; before the caption is irrelevant (absolute).
-  // Only D: its notes are the ones served in the wrong orientation, so turning them is
-  // what actually helps. The other portrait proposals read fine upright.
-  if(L === "D") fig.appendChild(turnButton(pair, fig));
-  return fig;
-}
+    function pane(L, d, side) {
+      const p = document.createElement("div");
+      p.className = "pane";
+      const img = new Image();
+      img.loading = "lazy";
+      img.alt = `Proposal ${L}, ${d} €, ${sideLabel(side).toLowerCase()}`;
+      img.dataset.remote = remotePath(L, d, side);
+      img.onerror = () => {
+        if (img.src !== img.dataset.remote) { img.src = img.dataset.remote; return; }  // fall back to the ECB copy
+        const fig = p.closest("figure");
+        p.remove();
+        if (fig && !fig.querySelector(".pane")) fig.remove();   // nothing left to show
+      };
+      // A portrait design served as a landscape file has no EXIF orientation flag.
+      // Detect it from the decoded size and rotate in the layout instead of touching the file.
+      img.onload = () => {
+        const nw = img.naturalWidth, nh = img.naturalHeight;
+        const rot = PORTRAIT.has(L) && nw > nh;
+        const dw = rot ? nh : nw, dh = rot ? nw : nh;   // dimensions as displayed
+        p.classList.toggle("rot", rot);
+        p.style.setProperty("--ar", dw / dh);
+        p.style.aspectRatio = `${dw} / ${dh}`;
+        if (dw < dh) notePortraitAr(dw / dh);            // portrait: feeds the shared --long
+      };
+      img.src = localPath(L, d, side);
+      img.onclick = () => openLB(img);
+      const lbl = document.createElement("span");
+      lbl.className = "lbl";
+      lbl.innerHTML = `<span class="l">${L} ${d}</span>` +
+        `<span class="s">${sideLabel(side)}</span>`;
+      p.append(img, lbl);
+      return p;
+    }
 
-// #G, #cmp, #contest -- deep link to a view. A shared ranking (#contest=FADC…) owns
-// the hash while it is there, so don't overwrite it.
-const viewFromHash = () => {
-  const h = decodeURIComponent(location.hash).replace(/^#/, "").toUpperCase();
-  if(LETTERS.includes(h)) return h;
-  if(h === "CMP") return "cmp";
-  if(h === "CONTEST") return "contest";
-  return null;
-};
+    /* Turn a portrait pair onto its side. Rotation does not affect layout, so the turned pair
+       would spill over its neighbours; scale it down by its own aspect ratio so the turned long
+       edge fits the width it had, and shrink the reserved height to match (a rotated box that
+       is k*height wide and k*width tall only needs k*width of row height). */
+    function turnButton(pair, fig) {
+      const b = document.createElement("button");
+      b.className = "turnbtn";
+      b.textContent = "⟳";
+      b.title = "Turn the note sideways";
+      b.setAttribute("aria-label", "Turn the note sideways");
+      // The button sits on the figure, which also spans the caption; centre it on the visible
+      // note area instead, i.e. the pair's own box (whose height changes when turned).
+      const centre = () => {
+        const p = pair.getBoundingClientRect(), f = fig.getBoundingClientRect();
+        const h = pair.classList.contains("turn") ? p.height + parseFloat(pair.style.marginBottom || 0)
+          : p.height;
+        b.style.setProperty("--turn-top", (p.top - f.top + h / 2) + "px");
+      };
+      b.onclick = () => {
+        const on = !pair.classList.contains("turn");
+        if (on) {
+          const r = pair.getBoundingClientRect();
+          // Turned, the box is r.height wide and r.width tall. Scale so the new width fits the
+          // old one, then pull in the leftover height with a negative margin -- the pair's own
+          // box must keep its size, or the panes reflow and fight the rotation.
+          const k = Math.min(1, r.width / r.height);
+          pair.style.setProperty("--turn-k", k);
+          pair.style.marginBottom = (r.width * k - r.height) + "px";
+        } else {
+          pair.style.removeProperty("--turn-k");
+          pair.style.removeProperty("margin-bottom");
+        }
+        pair.classList.toggle("turn", on);
+        b.setAttribute("aria-pressed", on);
+        centre();
+      };
+      // Images decode after the button is built, so the pair has no height yet. Recentre when
+      // the pointer reaches the figure -- that is what reveals the button, and by then the
+      // layout is settled. Cheap enough to just redo on every enter.
+      fig.addEventListener("pointerenter", centre);
+      return b;
+    }
 
-function show(key){
-  current = key;
-  if(!sharedRanking() && viewFromHash() !== key)
-    history.replaceState(null, "", "#" + key);
-  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.k === key));
-  grid.innerHTML = ""; meta.innerHTML = "";
-  grid.classList.toggle("cmp", key === "cmp");
-  grid.classList.remove("contest", "rank");
-  // .square: cmp, rank and contest all lay their cards out as squares (see the CSS).
-  // Set here for cmp; the rank and contest views add it with their own class.
-  grid.classList.toggle("square", key === "cmp");
-  const f = $("#filter").value;
+    // one figure per denomination, both sides inside.
+    // captionless: the proposal view names the proposal in its heading, so a per-card
+    // "Proposal A" under every note is just repetition -- skip the caption there.
+    function noteBox(L, d, filter, captionless) {
+      const fig = document.createElement("figure");
+      const pair = document.createElement("div");
+      const shown = SIDES.filter(s => filter === "all" || filter === s);
+      pair.className = `pair ${PORTRAIT.has(L) ? "v" : "h"} ${shown.length === 2 ? "two" : "one"}`;
+      pair.style.setProperty("--scale", WIDTH_MM[d] / WIDTH_MM[200]);
+      shown.forEach(s => pair.appendChild(pane(L, d, s)));
 
-  if(key === "contest") return showContest();
+      fig.append(pair);
+      if (!captionless) {
+        const cap = document.createElement("figcaption");
+        cap.innerHTML = `<b>Proposal ${L}</b>`;
+        fig.append(cap);
+      }
+      // After the pair, so it stacks above it; before the caption is irrelevant (absolute).
+      // Only D: its notes are the ones served in the wrong orientation, so turning them is
+      // what actually helps. The other portrait proposals read fine upright.
+      if (L === "D") fig.appendChild(turnButton(pair, fig));
+      return fig;
+    }
 
-  if(key === "cmp"){
-    meta.innerHTML = `<h2>All proposals side by side</h2>
+    // #G, #cmp, #contest -- deep link to a view. A shared ranking (#contest=FADC…) owns
+    // the hash while it is there, so don't overwrite it.
+    const viewFromHash = () => {
+      const h = decodeURIComponent(location.hash).replace(/^#/, "").toUpperCase();
+      if (LETTERS.includes(h)) return h;
+      if (h === "CMP") return "cmp";
+      if (h === "CONTEST") return "contest";
+      return null;
+    };
+
+    function show(key) {
+      current = key;
+      if (!sharedRanking() && viewFromHash() !== key)
+        history.replaceState(null, "", "#" + key);
+      document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.k === key));
+      grid.innerHTML = ""; meta.innerHTML = "";
+      grid.classList.toggle("cmp", key === "cmp");
+      grid.classList.remove("contest", "rank");
+      // .square: cmp, rank and contest all lay their cards out as squares (see the CSS).
+      // Set here for cmp; the rank and contest views add it with their own class.
+      grid.classList.toggle("square", key === "cmp");
+      const f = $("#filter").value;
+
+      if (key === "contest") return showContest();
+
+      if (key === "cmp") {
+        meta.innerHTML = `<h2>All proposals side by side</h2>
       <p>The same denomination across all ten proposals.
       <label class="ctl inline">Denomination
-        <select id="cmpD">${DENOMS.map(d=>`<option value="${d}"${d===cmpDenom?" selected":""}>${d}</option>`).join("")}</select>
+        <select id="cmpD">${DENOMS.map(d => `<option value="${d}"${d === cmpDenom ? " selected" : ""}>${d}</option>`).join("")}</select>
       </label></p>`;
-    $("#cmpD").onchange = e => { cmpDenom = +e.target.value; show("cmp"); };
-    LETTERS.forEach(L => grid.appendChild(noteBox(L, cmpDenom, f)));
-    return;
-  }
+        $("#cmpD").onchange = e => { cmpDenom = +e.target.value; show("cmp"); };
+        LETTERS.forEach(L => grid.appendChild(noteBox(L, cmpDenom, f)));
+        return;
+      }
 
-  const p = PROPOSALS[key];
-  meta.innerHTML = `<h2>Proposal ${key}
+      const p = PROPOSALS[key];
+      meta.innerHTML = `<h2>Proposal ${key}
       ${p.designer ? `<span class="badge">by ${p.designer}</span>` : ""}
       <span class="badge">${p.theme}</span>
       <a class="badge" href="${SRC_PAGE}" target="_blank" rel="noopener">Description on ecb.europa.eu</a></h2>`;
-  DENOMS.forEach(d => grid.appendChild(noteBox(key, d, f, true)));
-}
-
-/* ---------------------------------------------------------------- contest ----
-   Bottom-up merge sort driven by the user. The algorithm decides which pair to
-   ask about, so no comparison is ever redundant and the run ends by itself after
-   ~22 votes for ten proposals. The full ranking is a by-product of sorting.
-   State is plain arrays and integers, so it serialises to localStorage as is. */
-
-const CKEY = "contest", RKEY = "contestResult";
-
-// runs: sorted runs still to be merged. a/b: the two runs being merged right now,
-// out: what has been merged of them. Head of a vs head of b is the open question.
-function newContest(){
-  const pool = LETTERS.slice();
-  for(let i = pool.length - 1; i > 0; i--){          // Fisher-Yates: the initial
-    const j = Math.floor(Math.random() * (i + 1));   // pairing shouldn't be alphabetical
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-  return settle({ runs: pool.map(l => [l]), a:null, b:null, out:[], votes:0 });
-}
-
-// Advance to a state that has an open question, or to a finished sort.
-function settle(c){
-  for(;;){
-    if(c.a){
-      if(c.a.length && c.b.length) return c;                  // a real question
-      c.runs.push(c.out.concat(c.a, c.b));                    // one side exhausted
-      c.a = c.b = null; c.out = [];
+      DENOMS.forEach(d => grid.appendChild(noteBox(key, d, f, true)));
     }
-    if(c.runs.length < 2) return c;                           // done
-    c.a = c.runs.shift(); c.b = c.runs.shift(); c.out = [];
-  }
-}
-const cPair = c => c.a && c.a.length && c.b.length ? [c.a[0], c.b[0]] : null;
-const cDone = c => !cPair(c) && c.runs.length === 1;
 
-/* ponytail: no "of N" at all. The old n*ceil(log2 n) bound advertised 40 for ten
-   proposals where a real run takes 15-25 (avg ~21), and predicting the true worst
-   case from a mid-run state is not worth the code: the queue's future pairing order
-   is what decides it, so any estimate cheap enough to be worth writing either
-   overstates it or grows under the user's feet, which is worse than saying nothing.
-   The vote count alone is honest and the run visibly ends on its own. */
+    /* ---------------------------------------------------------------- contest ----
+       Bottom-up merge sort driven by the user. The algorithm decides which pair to
+       ask about, so no comparison is ever redundant and the run ends by itself after
+       ~22 votes for ten proposals. The full ranking is a by-product of sorting.
+       State is plain arrays and integers, so it serialises to localStorage as is. */
 
-function cVote(c, winner){
-  const from = c.a[0] === winner ? c.a : c.b;
-  c.out.push(from.shift());
-  c.votes++;
-  return settle(c);
-}
+    const CKEY = "contest", RKEY = "contestResult";
 
-let contest = null;
-const cSave = () => { try{
-  if(contest) localStorage.setItem(CKEY, JSON.stringify(contest));
-}catch(e){} };
-const cLoad = () => { try{
-  const s = localStorage.getItem(CKEY);
-  return s ? settle(JSON.parse(s)) : null;
-}catch(e){ return null; } };
-const cClear = () => { try{ localStorage.removeItem(CKEY); }catch(e){} };
-const saveResult = r => { try{ localStorage.setItem(RKEY, r.join("")); }catch(e){} };
+    // runs: sorted runs still to be merged. a/b: the two runs being merged right now,
+    // out: what has been merged of them. Head of a vs head of b is the open question.
+    function newContest() {
+      const pool = LETTERS.slice();
+      for (let i = pool.length - 1; i > 0; i--) {          // Fisher-Yates: the initial
+        const j = Math.floor(Math.random() * (i + 1));   // pairing shouldn't be alphabetical
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      return settle({ runs: pool.map(l => [l]), a: null, b: null, out: [], votes: 0 });
+    }
 
-// A ranking shared via #contest=FADC… — shown instead of your own, until you start a run.
-function sharedRanking(){
-  const m = /[#&]contest=([A-J]{10})/.exec(location.hash);
-  if(!m) return null;
-  const r = m[1].split("");
-  return new Set(r).size === LETTERS.length ? r : null;   // ignore malformed codes
-}
+    // Advance to a state that has an open question, or to a finished sort.
+    function settle(c) {
+      for (; ;) {
+        if (c.a) {
+          if (c.a.length && c.b.length) return c;                  // a real question
+          c.runs.push(c.out.concat(c.a, c.b));                    // one side exhausted
+          c.a = c.b = null; c.out = [];
+        }
+        if (c.runs.length < 2) return c;                           // done
+        c.a = c.runs.shift(); c.b = c.runs.shift(); c.out = [];
+      }
+    }
+    const cPair = c => c.a && c.a.length && c.b.length ? [c.a[0], c.b[0]] : null;
+    const cDone = c => !cPair(c) && c.runs.length === 1;
 
-function voteButton(L, other, nth){
-  const b = document.createElement("button");
-  b.className = "vote";
-  b.innerHTML = `I prefer this design <small>(${nth})</small>`;
-  b.onclick = () => { contest = cVote(contest, L); cSave(); show("contest"); };
-  b.title = `Prefer proposal ${L} over ${other}`;
-  return b;
-}
+    /* ponytail: no "of N" at all. The old n*ceil(log2 n) bound advertised 40 for ten
+       proposals where a real run takes 15-25 (avg ~21), and predicting the true worst
+       case from a mid-run state is not worth the code: the queue's future pairing order
+       is what decides it, so any estimate cheap enough to be worth writing either
+       overstates it or grows under the user's feet, which is worse than saying nothing.
+       The vote count alone is honest and the run visibly ends on its own. */
 
-function showRanking(rank, shared){
-  const first = rank[0];
-  meta.innerHTML = `<h2>${shared ? "A shared ranking" : "Your ranking"}
+    function cVote(c, winner) {
+      const from = c.a[0] === winner ? c.a : c.b;
+      c.out.push(from.shift());
+      c.votes++;
+      return settle(c);
+    }
+
+    let contest = null;
+    const cSave = () => {
+      try {
+        if (contest) localStorage.setItem(CKEY, JSON.stringify(contest));
+      } catch (e) { }
+    };
+    const cLoad = () => {
+      try {
+        const s = localStorage.getItem(CKEY);
+        return s ? settle(JSON.parse(s)) : null;
+      } catch (e) { return null; }
+    };
+    const cClear = () => { try { localStorage.removeItem(CKEY); } catch (e) { } };
+    const saveResult = r => { try { localStorage.setItem(RKEY, r.join("")); } catch (e) { } };
+
+    // A ranking shared via #contest=FADC… — shown instead of your own, until you start a run.
+    function sharedRanking() {
+      const m = /[#&]contest=([A-J]{10})/.exec(location.hash);
+      if (!m) return null;
+      const r = m[1].split("");
+      return new Set(r).size === LETTERS.length ? r : null;   // ignore malformed codes
+    }
+
+    function voteButton(L, other, nth) {
+      const b = document.createElement("button");
+      b.className = "vote";
+      b.innerHTML = `I prefer this design <small>(${nth})</small>`;
+      b.onclick = () => { contest = cVote(contest, L); cSave(); show("contest"); };
+      b.title = `Prefer proposal ${L} over ${other}`;
+      return b;
+    }
+
+    function showRanking(rank, shared) {
+      const first = rank[0];
+      meta.innerHTML = `<h2>${shared ? "A shared ranking" : "Your ranking"}
       <span class="badge">${PROPOSALS[first].theme}</span></h2>
     <p>${shared ? "Someone else's result, read from the link." :
-        "Ranked from your " + contest.votes + " comparisons."}
+          "Ranked from your " + contest.votes + " comparisons."}
        Winner: <strong>proposal ${first}</strong>${PROPOSALS[first].designer ?
-        " · " + PROPOSALS[first].designer : ""}.</p>
+          " · " + PROPOSALS[first].designer : ""}.</p>
     <div class="btnrow">
       <button class="btn" id="cAgain">${shared ? "Run my own contest" : "Run it again"}</button>
       ${shared ? "" : `<button class="btn" id="cShare">Copy result link</button>`}
     </div>`;
-  $("#cAgain").onclick = () => {
-    history.replaceState(null, "", location.pathname + location.search);
-    contest = newContest(); cSave(); show("contest");
-  };
-  if(!shared) $("#cShare").onclick = async e => {
-    const url = location.origin === "null" ? location.href.split("#")[0] + "#contest=" + rank.join("")
-              : location.origin + location.pathname + "#contest=" + rank.join("");
-    try{ await navigator.clipboard.writeText(url); e.target.textContent = "Link copied"; }
-    catch(err){ location.hash = "contest=" + rank.join(""); e.target.textContent = "Link in address bar"; }
-  };
+      $("#cAgain").onclick = () => {
+        history.replaceState(null, "", location.pathname + location.search);
+        contest = newContest(); cSave(); show("contest");
+      };
+      if (!shared) $("#cShare").onclick = async e => {
+        const url = location.origin === "null" ? location.href.split("#")[0] + "#contest=" + rank.join("")
+          : location.origin + location.pathname + "#contest=" + rank.join("");
+        try { await navigator.clipboard.writeText(url); e.target.textContent = "Link copied"; }
+        catch (err) { location.hash = "contest=" + rank.join(""); e.target.textContent = "Link in address bar"; }
+      };
 
-  grid.classList.add("rank", "square");
-  rank.forEach((L,i) => {
-    const fig = noteBox(L, 5, "all", true);
-    if(i === 0) fig.classList.add("first");
-    const pos = document.createElement("span");
-    pos.className = "pos"; pos.textContent = "#" + (i+1);
-    fig.prepend(pos);
-    const cap = document.createElement("figcaption");
-    cap.innerHTML = `<b>${L}</b><b>#${i+1}</b>`;
-    fig.append(cap);
-    // The whole card opens the proposal, except the images: those keep their lightbox.
-    fig.classList.add("link");
-    fig.title = `Show all denominations of proposal ${L}`;
-    fig.onclick = e => { if(e.target.tagName !== "IMG") show(L); };
-    grid.appendChild(fig);
-  });
-}
+      grid.classList.add("rank", "square");
+      rank.forEach((L, i) => {
+        const fig = noteBox(L, 5, "all", true);
+        if (i === 0) fig.classList.add("first");
+        const pos = document.createElement("span");
+        pos.className = "pos"; pos.textContent = "#" + (i + 1);
+        fig.prepend(pos);
+        const cap = document.createElement("figcaption");
+        cap.innerHTML = `<b>${L}</b><b>#${i + 1}</b>`;
+        fig.append(cap);
+        // The whole card opens the proposal, except the images: those keep their lightbox.
+        fig.classList.add("link");
+        fig.title = `Show all denominations of proposal ${L}`;
+        fig.onclick = e => { if (e.target.tagName !== "IMG") show(L); };
+        grid.appendChild(fig);
+      });
+    }
 
-function showContest(){
-  const shared = sharedRanking();
-  if(shared) return showRanking(shared, true);
+    function showContest() {
+      const shared = sharedRanking();
+      if (shared) return showRanking(shared, true);
 
-  if(!contest) contest = cLoad() || newContest();
-  const pair = cPair(contest);
+      if (!contest) contest = cLoad() || newContest();
+      const pair = cPair(contest);
 
-  if(!pair){
-    const rank = contest.runs[0];
-    saveResult(rank); cClear();
-    return showRanking(rank, false);
-  }
+      if (!pair) {
+        const rank = contest.runs[0];
+        saveResult(rank); cClear();
+        return showRanking(rank, false);
+      }
 
-  // Rotate the denomination so a full run shows every note, without another control.
-  const d = DENOMS[contest.votes % DENOMS.length];
-  meta.innerHTML = `<h2>Which one do you prefer?</h2>
+      // Rotate the denomination so a full run shows every note, without another control.
+      const d = DENOMS[contest.votes % DENOMS.length];
+      meta.innerHTML = `<h2>Which one do you prefer?</h2>
     <p>Comparison ${contest.votes + 1}<span class="keys"> ·
        <kbd>1</kbd>/<kbd>2</kbd> to vote</span>
     <span class="btnrow inline">
       <button class="btn" id="cReset">Start over</button>
     </span></p>`;
-  $("#cReset").onclick = () => { contest = newContest(); cSave(); show("contest"); };
+      $("#cReset").onclick = () => { contest = newContest(); cSave(); show("contest"); };
 
-  grid.classList.add("contest", "square");
-  // The candidates are deliberately unlabelled: the vote should go to the design,
-  // not to a letter. The caption holds only the vote button.
-  pair.forEach((L,i) => {
-    const fig = noteBox(L, d, "all", true);
-    const cap = document.createElement("figcaption");
-    cap.appendChild(voteButton(L, pair[1-i], i+1));
-    fig.append(cap);
-    grid.appendChild(fig);
-  });
-}
-
-/* Self-check: drive the sort with an alphabetical oracle over every permutation of
-   five letters. The result must be sorted and no pair may be asked twice.
-   Run with ?selftest — never in the normal path. */
-function selftest(){
-  const perms = (a) => a.length < 2 ? [a] :
-    a.flatMap((x,i) => perms([...a.slice(0,i), ...a.slice(i+1)]).map(p => [x, ...p]));
-  let runs = 0;
-  for(const p of perms(["A","B","C","D","E"])){
-    let c = settle({ runs: p.map(l => [l]), a:null, b:null, out:[], votes:0 });
-    const seen = new Set();
-    let pair, guard = 0;
-    while((pair = cPair(c))){
-      const k = pair.slice().sort().join("");
-      console.assert(!seen.has(k), "pair asked twice", p.join(""), k);
-      seen.add(k);
-      c = cVote(c, pair[0] < pair[1] ? pair[0] : pair[1]);   // oracle: alphabetical wins
-      console.assert(++guard < 100, "no termination", p.join(""));
+      grid.classList.add("contest", "square");
+      // The candidates are deliberately unlabelled: the vote should go to the design,
+      // not to a letter. The caption holds only the vote button.
+      pair.forEach((L, i) => {
+        const fig = noteBox(L, d, "all", true);
+        const cap = document.createElement("figcaption");
+        cap.appendChild(voteButton(L, pair[1 - i], i + 1));
+        fig.append(cap);
+        grid.appendChild(fig);
+      });
     }
-    console.assert(cDone(c), "not finished", p.join(""));
-    console.assert(c.runs[0].join("") === "ABCDE", "not sorted", p.join(""), c.runs[0].join(""));
-    // n*ceil(log2 n) is no longer shown to anyone, but it is still a true ceiling.
-    console.assert(c.votes <= 5 * Math.ceil(Math.log2(5)), "too many votes", c.votes);
-    runs++;
-  }
-  console.log(`merge selftest ok (${runs} permutations)`);
-}
-if(location.search.includes("selftest")) selftest();
 
-/* lightbox */
-const lb = $("#lightbox"), lbImg = $("#lbImg"), lbCap = $("#lbCap");
-function openLB(img){
-  lbImg.classList.toggle("rot", img.parentElement.classList.contains("rot"));
-  lbImg.src = img.currentSrc || img.src;
-  lbCap.textContent = img.alt;
-  lb.classList.add("on");
-}
-function closeLB(){ lb.classList.remove("on"); lbImg.src = ""; }
-lb.onclick = e => { if(e.target !== lbImg) closeLB(); };
-$("#lbClose").onclick = closeLB;
+    /* Self-check: drive the sort with an alphabetical oracle over every permutation of
+       five letters. The result must be sorted and no pair may be asked twice.
+       Run with ?selftest — never in the normal path. */
+    function selftest() {
+      const perms = (a) => a.length < 2 ? [a] :
+        a.flatMap((x, i) => perms([...a.slice(0, i), ...a.slice(i + 1)]).map(p => [x, ...p]));
+      let runs = 0;
+      for (const p of perms(["A", "B", "C", "D", "E"])) {
+        let c = settle({ runs: p.map(l => [l]), a: null, b: null, out: [], votes: 0 });
+        const seen = new Set();
+        let pair, guard = 0;
+        while ((pair = cPair(c))) {
+          const k = pair.slice().sort().join("");
+          console.assert(!seen.has(k), "pair asked twice", p.join(""), k);
+          seen.add(k);
+          c = cVote(c, pair[0] < pair[1] ? pair[0] : pair[1]);   // oracle: alphabetical wins
+          console.assert(++guard < 100, "no termination", p.join(""));
+        }
+        console.assert(cDone(c), "not finished", p.join(""));
+        console.assert(c.runs[0].join("") === "ABCDE", "not sorted", p.join(""), c.runs[0].join(""));
+        // n*ceil(log2 n) is no longer shown to anyone, but it is still a true ceiling.
+        console.assert(c.votes <= 5 * Math.ceil(Math.log2(5)), "too many votes", c.votes);
+        runs++;
+      }
+      console.log(`merge selftest ok (${runs} permutations)`);
+    }
+    if (location.search.includes("selftest")) selftest();
 
-/* controls */
-$("#filter").onchange = () => show(current);
-// Slider positions are 0..COLS.length-1; the value is the column count at that position.
-// Descending: the control reads as zoom, so right = fewer columns = larger notes.
-const COLS = [6,5,4,3,2,1];
-$("#size").oninput = e => document.documentElement.style.setProperty("--cols", COLS[e.target.value]);
+    /* lightbox */
+    const lb = $("#lightbox"), lbImg = $("#lbImg"), lbCap = $("#lbCap");
+    function openLB(img) {
+      lbImg.classList.toggle("rot", img.parentElement.classList.contains("rot"));
+      lbImg.src = img.currentSrc || img.src;
+      lbCap.textContent = img.alt;
+      lb.classList.add("on");
+    }
+    function closeLB() { lb.classList.remove("on"); lbImg.src = ""; }
+    lb.onclick = e => { if (e.target !== lbImg) closeLB(); };
+    $("#lbClose").onclick = closeLB;
 
-document.addEventListener("keydown", e => {
-  if(e.key === "Escape") return closeLB();
-  if(e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
-  // In a running contest 1/2 vote for the left/right candidate.
-  if(current === "contest" && (e.key === "1" || e.key === "2")){
-    const pair = contest && cPair(contest);
-    if(pair){ contest = cVote(contest, pair[+e.key - 1]); cSave(); show("contest"); }
-    return;
-  }
-  const order = [...LETTERS, "cmp", "contest"];
-  const i = order.indexOf(current);
-  if(e.key === "ArrowRight") show(order[(i+1) % order.length]);
-  else if(e.key === "ArrowLeft") show(order[(i-1+order.length) % order.length]);
-  else if(/^[a-jA-J]$/.test(e.key)) show(e.key.toUpperCase());
-  else if(e.key === "0") show("cmp");
-  else if(e.key === "9") show("contest");
-});
+    /* controls */
+    $("#filter").onchange = () => show(current);
+    // Slider positions are 0..COLS.length-1; the value is the column count at that position.
+    // Descending: the control reads as zoom, so right = fewer columns = larger notes.
+    const COLS = [6, 5, 4, 3, 2, 1];
+    $("#size").oninput = e => document.documentElement.style.setProperty("--cols", COLS[e.target.value]);
 
-// A result link may also arrive on an already-open page (pasted into the address bar,
-// or written by the share button), so react to the hash instead of only reading it once.
-addEventListener("hashchange", () => show(sharedRanking() ? "contest" : viewFromHash() || current));
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") return closeLB();
+      if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+      // In a running contest 1/2 vote for the left/right candidate.
+      if (current === "contest" && (e.key === "1" || e.key === "2")) {
+        const pair = contest && cPair(contest);
+        if (pair) { contest = cVote(contest, pair[+e.key - 1]); cSave(); show("contest"); }
+        return;
+      }
+      const order = [...LETTERS, "cmp", "contest"];
+      const i = order.indexOf(current);
+      if (e.key === "ArrowRight") show(order[(i + 1) % order.length]);
+      else if (e.key === "ArrowLeft") show(order[(i - 1 + order.length) % order.length]);
+      else if (/^[a-jA-J]$/.test(e.key)) show(e.key.toUpperCase());
+      else if (e.key === "0") show("cmp");
+      else if (e.key === "9") show("contest");
+    });
 
-// Share the current view, hash included, so the link opens where the sender was.
-// navigator.share is mobile-mostly and needs a secure context; fall back to the clipboard.
-$("#share").onclick = async e => {
-  const url = location.href;
-  if(navigator.share){
-    // A dismissed share sheet rejects with AbortError -- that is not a failure, say nothing.
-    try{ await navigator.share({title: document.title, url}); return; }
-    catch(err){ if(err.name === "AbortError") return; }
-  }
-  const label = e.target.textContent;
-  try{ await navigator.clipboard.writeText(url); e.target.textContent = "Link copied"; }
-  catch(err){ e.target.textContent = "Copy from address bar"; }
-  setTimeout(() => { e.target.textContent = label; }, 2000);
-};
+    // A result link may also arrive on an already-open page (pasted into the address bar,
+    // or written by the share button), so react to the hash instead of only reading it once.
+    addEventListener("hashchange", () => show(sharedRanking() ? "contest" : viewFromHash() || current));
 
-buildNav();
-show(sharedRanking() ? "contest" : viewFromHash() || "A");   // a shared result link opens on that result
-</script>
+    // Share the current view, hash included, so the link opens where the sender was.
+    // navigator.share is mobile-mostly and needs a secure context; fall back to the clipboard.
+    $("#share").onclick = async e => {
+      const url = location.href;
+      if (navigator.share) {
+        // A dismissed share sheet rejects with AbortError -- that is not a failure, say nothing.
+        try { await navigator.share({ title: document.title, url }); return; }
+        catch (err) { if (err.name === "AbortError") return; }
+      }
+      const label = e.target.textContent;
+      try { await navigator.clipboard.writeText(url); e.target.textContent = "Link copied"; }
+      catch (err) { e.target.textContent = "Copy from address bar"; }
+      setTimeout(() => { e.target.textContent = label; }, 2000);
+    };
+
+    buildNav();
+    show(sharedRanking() ? "contest" : viewFromHash() || "A");   // a shared result link opens on that result
+  </script>
 </body>
+
 </html>
