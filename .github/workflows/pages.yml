@@ -29,7 +29,7 @@ jobs:
           key: ecb-banknote-images-v1
 
       - name: Build
-        run: bash build.sh
+        run: bash download.sh dist
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
