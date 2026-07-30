@@ -391,6 +391,15 @@
       color: var(--accent)
     }
 
+    /* The one explanatory paragraph on the contest view: set smaller than the running copy
+     so it reads as background, and capped at a comfortable measure. */
+    .meta p.how {
+      max-width: 68ch;
+      margin-bottom: var(--s-4);
+      font-size: var(--fs-sm);
+      line-height: 1.6
+    }
+
     /* Separated by whitespace alone -- the middots read as punctuation next to a 26px
      title, so the gap does the dividing instead. The 2px lift is optical, not spacing. */
     .badge {
@@ -1264,7 +1273,8 @@
     function voteButton(L, other, nth) {
       const b = document.createElement("button");
       b.className = "vote";
-      b.innerHTML = `I prefer this design <small>(${nth})</small>`;
+      // The (1)/(2) is the keyboard shortcut, so it hides with the other .keys hints.
+      b.innerHTML = `I prefer this design <small class="keys">(${nth})</small>`;
       b.onclick = () => { contest = cVote(contest, L); cSave(); show("contest"); };
       b.title = `Prefer proposal ${L} over ${other}`;
       return b;
@@ -1327,6 +1337,11 @@
       // Rotate the denomination so a full run shows every note, without another control.
       const d = DENOMS[contest.votes % DENOMS.length];
       meta.innerHTML = `<h2>Which one do you prefer?</h2>
+    <p class="how">Ranking ten designs by gut feeling is hard; judging two is easy. So this asks you
+       one pair at a time and runs your answers through a
+       <a href="https://en.wikipedia.org/wiki/Merge_sort" target="_blank" rel="noopener">merge sort</a>,
+       with you in place of the comparison operator. Because order is transitive — prefer A over B and
+       B over C, and A over C follows — no pair has to be asked twice, and about 20 votes settle all ten.</p>
     <p>Comparison ${contest.votes + 1}<span class="keys"> ·
        <kbd>1</kbd>/<kbd>2</kbd> to vote</span>
     <span class="btnrow inline">
