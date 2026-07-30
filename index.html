@@ -44,18 +44,34 @@
 
   header{position:sticky; top:0; z-index:20; background:var(--bg); padding:18px 40px 14px}
   .row{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
-  h1{font-size:14px; font-weight:600; margin:0; letter-spacing:.2px}
-  h1 span{color:var(--fg-dim); font-weight:400}
+  h1{font-size:14px; font-weight:600; margin:0; letter-spacing:.2px; line-height:1.25}
+  /* Subtitle on its own line: the one-line version pushed the nav too far right. */
+  h1 span{display:block; color:var(--fg-dim); font-weight:400; font-size:12px}
   nav{display:flex; gap:4px; flex-wrap:wrap}
   .tab{appearance:none; border:1px solid var(--line); border-radius:6px;
        background:var(--tab-bg);
        color:var(--fg-dim); min-width:32px; height:32px; padding:0 8px;
        font:500 14px/1 system-ui; cursor:pointer; transition:.12s}
   .tab.wide{padding:0 14px}
+  /* Contest is the one thing here you *do*, not just look at, so it carries an accent
+     tint at rest. Declared before :hover/.active so those still win. */
+  .tab.spark{border-color:var(--accent); color:var(--accent)}
   .tab:hover{background:var(--accent); border-color:var(--accent); color:#fff}
   .tab.active{background:var(--accent); border-color:var(--accent);
               color:#fff; font-weight:650}
   .spacer{flex:1}
+  /* The nav is the main control, so give it more presence once there is room for it.
+     1350px is where the bigger tabs still clear the title and the controls on one row. */
+  @media (min-width:1350px){
+    /* Centred on the header, not on the space left over: the h1 and the controls
+       flanking it differ in width, so two flex spacers would sit it off-centre. */
+    .row{position:relative}
+    /* nowrap: an absolutely positioned flex box sizes to its containing block, not its
+       content, so it would wrap mid-row at any width. */
+    nav{position:absolute; left:50%; transform:translateX(-50%); gap:6px; flex-wrap:nowrap}
+    .tab{min-width:40px; height:40px; padding:0 12px; font-size:16px}
+    .tab.wide{padding:0 18px}
+  }
   /* Same chrome as .tab, so the controls read as one family. The chevron is a background
      image rather than a wrapper + pseudo-element: appearance:none drops the native arrow,
      and currentColor keeps it in step with the text in both themes and on hover. */
@@ -76,9 +92,10 @@
   .meta h2{margin:0 0 6px; font-size:26px; font-weight:600; letter-spacing:-.4px}
   .meta p{margin:0; color:var(--fg-dim); font-size:14px}
   .meta a{color:var(--accent)}
+  /* Separated by whitespace alone -- the middots read as punctuation next to a 26px
+     title, so the gap does the dividing instead. */
   .badge{display:inline-block; font-size:13px; font-weight:400;
-         color:var(--fg-dim); margin-left:10px; vertical-align:2px}
-  .badge::before{content:"· "}
+         color:var(--fg-dim); margin-left:18px; vertical-align:2px}
 
   .grid{display:grid; gap:3rem 2rem; grid-template-columns:repeat(var(--cols),1fr);
         align-items:stretch}
@@ -206,11 +223,15 @@
   .grid.contest{grid-template-columns:repeat(2,1fr); max-width:1100px; margin:0 auto}
   @media (max-width:700px){ .grid.contest{grid-template-columns:1fr} }
   .grid.contest figcaption{flex-direction:column; align-items:stretch; gap:14px}
-  .vote{appearance:none; border:1px solid var(--line); background:none; color:var(--fg);
+  /* Same chrome and fill-on-hover as .tab, so the vote reads as the same kind of control;
+     only the sizing differs, it spans the candidate's column. */
+  .vote{appearance:none; border:1px solid var(--line); border-radius:6px;
+        background:var(--tab-bg); color:var(--fg-dim);
         padding:11px 14px; font:500 14px/1 system-ui; cursor:pointer;
         width:100%; transition:.12s}
-  .vote:hover{border-color:var(--accent); color:var(--accent)}
+  .vote:hover{background:var(--accent); border-color:var(--accent); color:#fff}
   .vote small{color:var(--fg-dim)}
+  .vote:hover small{color:#fff}
 
   .grid.rank{grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); max-width:1100px;
              margin:22px auto 0}
@@ -242,7 +263,9 @@
   @media (hover:none) and (pointer:coarse){ .keys{display:none} }
   /* Below 768px there is no room for a second column, so the slider is inert -- hide it
      and force one column regardless of its value. */
+  .bigscreen{display:none}
   @media (max-width:767px){
+    .bigscreen{display:inline}
     .ctl.size{display:none}
     .grid{--cols:1}
     header{padding:14px 20px 12px}
@@ -256,18 +279,19 @@
 
 <header>
   <div class="row">
-    <h1>New Euro Banknotes <span>· ECB design proposals</span></h1>
+    <h1>New Euro Banknotes <span>ECB design proposals</span></h1>
+    <span class="spacer"></span>
     <nav id="nav"></nav>
     <span class="spacer"></span>
     <label class="ctl">
       <select id="filter">
-        <option value="all">both sides</option>
+        <option value="all">front + back</option>
         <option value="front">front only</option>
         <option value="back">back only</option>
       </select>
     </label>
     <label class="ctl size">Zoom
-      <input type="range" id="size" min="0" max="4" step="1" value="3" list="colsteps"
+      <input type="range" id="size" min="0" max="5" step="1" value="3" list="colsteps"
              aria-label="Zoom: how large the notes are shown">
       <datalist id="colsteps"><option value="0"><option value="1"><option value="2"><option value="3"><option value="4"></datalist>
     </label>
@@ -278,6 +302,7 @@
   <div class="meta" id="meta"></div>
   <div class="grid" id="grid"></div>
   <p class="hint">
+    <span class="bigscreen">Best viewed on a larger screen.<br></span>
     <span class="keys"><kbd>←</kbd> <kbd>→</kbd> switch proposal · <kbd>A</kbd>–<kbd>J</kbd> jump directly ·
     <kbd>0</kbd> compare view · <kbd>9</kbd> contest · <kbd>Esc</kbd> closes it ·
     </span>Click an image for the full-size view.<br>
@@ -345,8 +370,8 @@ function buildNav(){
   c.onclick = () => show("cmp");
   nav.appendChild(c);
   const t = document.createElement("button");
-  t.className = "tab wide"; t.textContent = "Contest"; t.dataset.k = "contest";
-  t.title = "Find your favourite by voting on pairs";
+  t.className = "tab wide spark"; t.innerHTML = "✨ Contest"; t.dataset.k = "contest";
+  t.title = "Which design wins? Vote your way to a personal ranking";
   t.onclick = () => show("contest");
   nav.appendChild(t);
 }
@@ -498,10 +523,9 @@ function show(key){
 
   const p = PROPOSALS[key];
   meta.innerHTML = `<h2>Proposal ${key}
+      ${p.designer ? `<span class="badge">by ${p.designer}</span>` : ""}
       <span class="badge">${p.theme}</span>
-      <span class="badge">${PORTRAIT.has(key) ? "portrait" : "landscape"}</span></h2>
-    <p>${p.designer ? "Designed by " + p.designer + " · " : ""}
-       <a href="${SRC_PAGE}" target="_blank" rel="noopener">Description on ecb.europa.eu</a></p>`;
+      <a class="badge" href="${SRC_PAGE}" target="_blank" rel="noopener">Description on ecb.europa.eu</a></h2>`;
   DENOMS.forEach(d => grid.appendChild(noteBox(key, d, f, true)));
 }
 
@@ -570,7 +594,7 @@ function sharedRanking(){
 function voteButton(L, other, nth){
   const b = document.createElement("button");
   b.className = "vote";
-  b.innerHTML = `Choose ${L} <small>(${nth})</small>`;
+  b.innerHTML = `I prefer this design <small>(${nth})</small>`;
   b.onclick = () => { contest = cVote(contest, L); cSave(); show("contest"); };
   b.title = `Prefer proposal ${L} over ${other}`;
   return b;
@@ -696,7 +720,7 @@ $("#lbClose").onclick = closeLB;
 $("#filter").onchange = () => show(current);
 // Slider positions are 0..COLS.length-1; the value is the column count at that position.
 // Descending: the control reads as zoom, so right = fewer columns = larger notes.
-const COLS = [6,5,4,3,2];
+const COLS = [6,5,4,3,2,1];
 $("#size").oninput = e => document.documentElement.style.setProperty("--cols", COLS[e.target.value]);
 
 document.addEventListener("keydown", e => {
