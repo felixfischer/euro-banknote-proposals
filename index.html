@@ -44,7 +44,7 @@
 
   header{position:sticky; top:0; z-index:20; background:var(--bg); padding:18px 40px 14px}
   .row{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
-  h1{font-size:14px; font-weight:600; margin:0 10px 0 0; letter-spacing:.2px}
+  h1{font-size:14px; font-weight:600; margin:0; letter-spacing:.2px}
   h1 span{color:var(--fg-dim); font-weight:400}
   nav{display:flex; gap:4px; flex-wrap:wrap}
   .tab{appearance:none; border:1px solid var(--line); border-radius:6px;
@@ -259,9 +259,9 @@
     <h1>New Euro Banknotes <span>· ECB design proposals</span></h1>
     <nav id="nav"></nav>
     <span class="spacer"></span>
-    <label class="ctl">Sides
+    <label class="ctl">
       <select id="filter">
-        <option value="all">both</option>
+        <option value="all">both sides</option>
         <option value="front">front only</option>
         <option value="back">back only</option>
       </select>
