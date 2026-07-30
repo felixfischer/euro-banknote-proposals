@@ -72,7 +72,7 @@
          border-radius:var(--radius); overflow:hidden}
 
   /* one box per denomination, holding both sides */
-  .pair{display:flex; gap:6px; padding:6px; background:var(--panel-2)}
+  .pair{display:flex; gap:1rem; padding:1rem; background:var(--panel-2)}
   .pair.h{flex-direction:column}   /* landscape note -> sides stacked      */
   .pair.v{flex-direction:row}      /* portrait note  -> sides side by side */
   /* Every pane carries the aspect ratio of the note AS DISPLAYED, in --ar and
@@ -93,15 +93,18 @@
   /* Compare and ranking: every card is a square, so a note is rendered at the same
      scale whether its design is landscape or portrait (long edge = the square
      side minus padding and gap, in both cases). Keeps the grid rows even too. */
-  .grid.cmp .pair,.grid.rank .pair{aspect-ratio:1; align-items:center; justify-content:center}
-  .grid.cmp .pane,.grid.rank .pane{flex:0 0 auto}
+  .grid.cmp .pair,.grid.rank .pair,.grid.contest .pair{aspect-ratio:1; align-items:center; justify-content:center}
+  .grid.cmp .pane,.grid.rank .pane,.grid.contest .pane{flex:0 0 auto}
   .grid.cmp .pair.two.h .pane,
-  .grid.rank .pair.two.h .pane{height:calc((100% - 6px)/2); width:auto}   /* stacked  */
+  .grid.rank .pair.two.h .pane,
+  .grid.contest .pair.two.h .pane{height:calc((100% - 6px)/2); width:auto}   /* stacked  */
   .grid.cmp .pair.two.v .pane,
-  .grid.rank .pair.two.v .pane{width:calc((100% - 6px)/2)}                /* alongside */
+  .grid.rank .pair.two.v .pane,
+  .grid.contest .pair.two.v .pane{width:calc((100% - 6px)/2)}                /* alongside */
   /* single side: fit the note into the square by its longer edge */
   .grid.cmp .pair.one .pane,
-  .grid.rank .pair.one .pane{width:calc(100% * min(1, var(--ar,1)))}
+  .grid.rank .pair.one .pane,
+  .grid.contest .pair.one .pane{width:calc(100% * min(1, var(--ar,1)))}
 
   figcaption{padding:8px 12px; display:flex; justify-content:space-between;
              align-items:baseline; gap:8px; border-top:1px solid var(--line)}
