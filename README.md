@@ -30,7 +30,7 @@ them is not, which is where the contest came from.
   `9` opens Contest, and `1`/`2` vote inside a contest
 - **Compare** view: the same denomination across all ten proposals at once
 - **Contest** view: vote on pairs of proposals until a personal ranking 1–10 emerges. A merge
-  sort picks the pairings, so it asks only the comparisons it actually needs — around 21 votes
+  sort picks the pairings, so it asks only the comparisons it actually needs — 15 to 25 votes
   for ten proposals, none of them redundant. Your votes never leave the browser: progress and
   result live in `localStorage`, and the result link (`#contest=…`) encodes the ranking itself,
   so sharing it needs no server
@@ -63,9 +63,11 @@ proposals at the same denomination — front and back of each — and you pick o
 ranking from 1 to 10 falls out.
 
 The pairings are not random and there is no bracket: a **merge sort** asks the questions. That
-means it only ever asks comparisons it actually needs (typically around 21 for ten proposals, never
-more than 40), never asks the same pair twice, ends by itself, and produces a complete ranking
-rather than just a winner. The
+means it only ever asks comparisons it actually needs (15 to 25 for ten proposals, about 21 on
+average), never asks the same pair twice, ends by itself, and produces a complete ranking
+rather than just a winner. No total is advertised while you vote: the exact number depends on
+the order the merges fall out in, and a bound cheap enough to compute either overstates it or
+grows as you go, which is worse than not showing one. The
 denomination rotates from one comparison to the next, so a single run walks past every note.
 
 Nothing is sent anywhere. The run in progress and the final ranking live in `localStorage`, so
@@ -78,21 +80,14 @@ sorted, that no pair is ever asked twice, and that the run terminates.
 
 ## Deploying
 
-`build.sh` assembles a `dist/` directory containing `index.html` plus the images, which it downloads
-from the ECB **at build time**. Nothing image-related is ever committed to the repository.
+Given a target directory, `download.sh` assembles it into a deployable site: `index.html`, the
+screenshots, and the images, which it downloads from the ECB **at build time**. Nothing
+image-related is ever committed to the repository.
 
 ```bash
-bash build.sh             # -> ./dist, ready to upload anywhere
-SKIP_IMAGES=1 bash build.sh   # -> ./dist without images (viewer hotlinks the ECB instead)
+bash download.sh dist             # -> ./dist, ready to upload anywhere
+SKIP_IMAGES=1 bash download.sh dist   # -> ./dist without images (viewer hotlinks the ECB instead)
 ```
-
-Both configured targets are zero-touch:
-
-### Render
-
-`render.yaml` is a blueprint. Push the repo to GitHub, then in Render pick **New → Blueprint** and
-select it — build command, publish path and cache headers come from the file. Static sites are free
-and pull-request previews are enabled.
 
 ### GitHub Pages
 
@@ -108,7 +103,7 @@ Any static host works with the same two settings:
 
 | Setting | Value |
 | --- | --- |
-| Build command | `bash build.sh` |
+| Build command | `bash download.sh dist` |
 | Publish directory | `dist` |
 
 That covers Netlify, Cloudflare Pages, Vercel, Surge and a plain `rsync` to your own server. The
@@ -119,9 +114,8 @@ build needs nothing but `bash` and `curl`.
 - **I claim no rights whatsoever to the banknote designs or their images.** They were created by the
   design teams commissioned in the ECB's design competition, and they are published by the European
   Central Bank on its own website.
-- The images are **not part of this repository**. They are fetched from the ECB's servers — into
-  your working copy when you run `download.sh`, or into the build output when a deployment runs
-  `build.sh`.
+- The images are **not part of this repository**. They are fetched from the ECB's servers by
+  `download.sh` — into your working copy, or into the build output when a deployment runs.
 - Nothing here is an official ECB product, and it is not affiliated with or endorsed by the ECB. For
   the authoritative presentation, the designers' names, the full descriptions and the current state
   of the selection process, always refer to the source:
@@ -148,10 +142,9 @@ button — it appears in the middle of a note on hover and turns that pair on it
 
 ```
 index.html                      the viewer (HTML, CSS and JS in one file)
-download.sh [dir]               fetches the images into <dir>/images/
-build.sh [out]                  assembles ./dist for deployment
+download.sh [dir]               fetches the images into <dir>/images/; given a
+                                directory it also assembles the site there
 screenshot-*.jpg                README screenshots; -compare is the og:image
-render.yaml                     Render blueprint
 .github/workflows/pages.yml     GitHub Pages deployment
 images/, dist/                  generated, git-ignored
 ```

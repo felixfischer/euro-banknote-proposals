@@ -31,6 +31,37 @@
     --fg:#e8eaee; --fg-dim:#9aa3b2; --accent:#4f8cff; --accent-2:#ffc247;
     --tab-bg:#1a1e26;
     --cols:3;
+
+    /* Spacing: a 4px ramp on the default 16px root, so --s-4 is 1rem. Named by
+       step rather than by pixel count, so a value can be retuned without
+       renaming its uses. Everything below is snapped onto this ramp; the few
+       values that stay in px say why where they sit. */
+    --s-1:.25rem;   /*  4px */
+    --s-2:.5rem;    /*  8px */
+    --s-3:.75rem;   /* 12px */
+    --s-4:1rem;     /* 16px */
+    --s-5:1.25rem;  /* 20px */
+    --s-6:1.5rem;   /* 24px */
+    --s-8:2rem;     /* 32px */
+    --s-10:2.5rem;  /* 40px */
+    --s-12:3rem;    /* 48px */
+    --s-16:4rem;    /* 64px */
+    --s-20:5rem;    /* 80px */
+
+    /* Type */
+    --fs-xs:.75rem;     /* 12px */
+    --fs-sm:.8125rem;   /* 13px */
+    --fs-md:.875rem;    /* 14px */
+    --fs-base:.9375rem; /* 15px, body */
+    --fs-lg:1rem;       /* 16px */
+    --fs-xl:1.75rem;    /* 28px, lightbox close */
+    --fs-2xl:1.625rem;  /* 26px, .meta h2 */
+
+    /* Controls */
+    --ctl-h:2rem;       /* 32px, .tab */
+    --ctl-h-sm:1.75rem; /* 28px, select */
+    --ctl-h-lg:2.5rem;  /* 40px, .tab on wide screens */
+    --radius:.375rem;   /* 6px */
   }
   @media (prefers-color-scheme: light){
     :root{ --bg:#fbfbfc; --line:#e1e4e9;
@@ -40,65 +71,82 @@
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--bg); color:var(--fg);
-       font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+       font:var(--fs-base)/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 
-  header{position:sticky; top:0; z-index:20; background:var(--bg); padding:18px 40px 14px}
-  .row{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
-  h1{font-size:14px; font-weight:600; margin:0; letter-spacing:.2px; line-height:1.25}
+  header{position:sticky; top:0; z-index:20; background:var(--bg);
+         padding:var(--s-5) var(--s-10) var(--s-3)}
+  .row{display:flex; align-items:center; gap:var(--s-4); flex-wrap:wrap}
+  h1{font-size:var(--fs-md); font-weight:600; margin:0; letter-spacing:.2px; line-height:1.25}
   /* Subtitle on its own line: the one-line version pushed the nav too far right. */
-  h1 span{display:block; color:var(--fg-dim); font-weight:400; font-size:12px}
-  nav{display:flex; gap:4px; flex-wrap:wrap}
-  .tab{appearance:none; border:1px solid var(--line); border-radius:6px;
-       background:var(--tab-bg);
-       color:var(--fg-dim); min-width:32px; height:32px; padding:0 8px;
-       font:500 14px/1 system-ui; cursor:pointer; transition:.12s}
-  .tab.wide{padding:0 14px}
+  h1 span{display:block; color:var(--fg-dim); font-weight:400; font-size:var(--fs-xs)}
+  nav{display:flex; gap:var(--s-1); flex-wrap:wrap}
+
+  /* .tab, select and .vote are one family of controls: same border, radius, resting
+     fill and fill-on-hover. Only their sizing differs, which is what the individual
+     rules below carry. 1px borders and the 2px focus ring stay in px on purpose --
+     rem-scaling a hairline makes it blur at fractional device pixel ratios. */
+  .tab, select, .vote{appearance:none; border:1px solid var(--line);
+                      border-radius:var(--radius); background:var(--tab-bg);
+                      color:var(--fg-dim); cursor:pointer; transition:.12s}
+  .tab:hover, select:hover, .vote:hover{border-color:var(--accent)}
+  .tab:hover, .vote:hover{background:var(--accent); color:#fff}
+  select:hover{color:var(--accent)}
+  .tab:focus-visible, select:focus-visible, .vote:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+
+  .tab{min-width:var(--ctl-h); height:var(--ctl-h); padding:0 var(--s-2);
+       font:500 var(--fs-md)/1 system-ui}
+  .tab.wide{padding:0 var(--s-3)}
   /* Contest is the one thing here you *do*, not just look at, so it carries an accent
      tint at rest. Declared before :hover/.active so those still win. */
   .tab.spark{border-color:var(--accent); color:var(--accent)}
-  .tab:hover{background:var(--accent); border-color:var(--accent); color:#fff}
   .tab.active{background:var(--accent); border-color:var(--accent);
               color:#fff; font-weight:650}
   .spacer{flex:1}
   /* The nav is the main control, so give it more presence once there is room for it.
-     1350px is where the bigger tabs still clear the title and the controls on one row. */
+     1350px is where the bigger tabs still clear the title and the controls on one row.
+     Breakpoints stay in px: they are tuned to real device widths, and em would move
+     them under browser zoom. */
   @media (min-width:1350px){
     /* Centred on the header, not on the space left over: the h1 and the controls
        flanking it differ in width, so two flex spacers would sit it off-centre. */
     .row{position:relative}
     /* nowrap: an absolutely positioned flex box sizes to its containing block, not its
        content, so it would wrap mid-row at any width. */
-    nav{position:absolute; left:50%; transform:translateX(-50%); gap:6px; flex-wrap:nowrap}
-    .tab{min-width:40px; height:40px; padding:0 12px; font-size:16px}
-    .tab.wide{padding:0 18px}
+    nav{position:absolute; left:50%; transform:translateX(-50%); gap:var(--s-2);
+        flex-wrap:nowrap}
+    .tab{min-width:var(--ctl-h-lg); height:var(--ctl-h-lg); padding:0 var(--s-3);
+         font-size:var(--fs-lg)}
+    .tab.wide{padding:0 var(--s-5)}
   }
-  /* Same chrome as .tab, so the controls read as one family. The chevron is a background
-     image rather than a wrapper + pseudo-element: appearance:none drops the native arrow,
-     and currentColor keeps it in step with the text in both themes and on hover. */
-  select{appearance:none; color:var(--fg); font:inherit; font-size:13px; cursor:pointer;
-         border:1px solid var(--line); border-radius:6px; background:var(--tab-bg);
-         height:28px; padding:0 26px 0 9px; transition:.12s;
+  /* The chevron is a background image rather than a wrapper + pseudo-element:
+     appearance:none drops the native arrow. Its 9px offset and size are optical,
+     tied to that specific glyph, so they stay in px. */
+  select{color:var(--fg); font:inherit; font-size:var(--fs-sm);
+         height:var(--ctl-h-sm); padding:0 var(--s-6) 0 var(--s-2);
          background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
          background-repeat:no-repeat; background-position:right 9px center; background-size:9px}
-  select:hover{border-color:var(--accent); color:var(--accent)}
-  select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
   /* The dropdown list itself is painted by the OS, so it needs explicit colours in dark mode. */
   select option{background:var(--bg); color:var(--fg)}
-  input[type=range]{accent-color:var(--accent); background:none; border:0; width:80px}
-  label.ctl{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--fg-dim)}
+  input[type=range]{accent-color:var(--accent); background:none; border:0; width:var(--s-20)}
+  label.ctl{display:flex; align-items:center; gap:var(--s-2);
+            font-size:var(--fs-sm); color:var(--fg-dim)}
+  /* Inline variants of the two control rows, used inside .meta copy. */
+  .ctl.inline, .btnrow.inline{display:inline-flex; margin:0 0 0 var(--s-3)}
 
-  main{padding:26px 40px 80px; margin:0 auto}
-  .meta{margin:0 0 40px}
-  .meta h2{margin:0 0 6px; font-size:26px; font-weight:600; letter-spacing:-.4px}
-  .meta p{margin:0; color:var(--fg-dim); font-size:14px}
+  main{padding:var(--s-6) var(--s-10) var(--s-20); margin:0 auto}
+  .meta{margin:0 0 var(--s-10)}
+  .meta h2{margin:0 0 var(--s-2); font-size:var(--fs-2xl); font-weight:600;
+           letter-spacing:-.4px}
+  .meta p{margin:0; color:var(--fg-dim); font-size:var(--fs-md)}
   .meta a{color:var(--accent)}
   /* Separated by whitespace alone -- the middots read as punctuation next to a 26px
-     title, so the gap does the dividing instead. */
-  .badge{display:inline-block; font-size:13px; font-weight:400;
-         color:var(--fg-dim); margin-left:18px; vertical-align:2px}
+     title, so the gap does the dividing instead. The 2px lift is optical, not spacing. */
+  .badge{display:inline-block; font-size:var(--fs-sm); font-weight:400;
+         color:var(--fg-dim); margin-left:var(--s-5); vertical-align:2px}
 
-  .grid{display:grid; gap:3rem 2rem; grid-template-columns:repeat(var(--cols),1fr);
-        align-items:stretch}
+  .grid{display:grid; gap:var(--s-12) var(--s-8);
+        grid-template-columns:repeat(var(--cols),1fr); align-items:stretch}
   /* ponytail: figures stretch to their row height; the .pair takes up the slack and
      centres its panes in it, so the caption keeps its natural height at the bottom. */
   figure{margin:0; display:flex; flex-direction:column}
@@ -110,16 +158,16 @@
   figure > figcaption{flex:0 0 auto}
 
   /* one box per denomination, holding both sides */
-  .pair{display:flex; gap:1rem; position:relative}
+  .pair{display:flex; gap:var(--s-4); position:relative}
   .pair.h{flex-direction:column}   /* landscape note -> sides stacked      */
   .pair.v{flex-direction:row}      /* portrait note  -> sides side by side */
   /* Proposal view: the notes are shown at their real relative size. The 200 fills
      the card, smaller denominations are narrower by their width ratio (see
      Groessenverhaeltnisse_Euro-Banknoten.csv) and centred. Width only -- the pane
      aspect ratio takes care of the height, for both orientations: a portrait pair
-     is a row of two panes, so its width shrinks with the box. */
-  .grid:not(.cmp):not(.rank):not(.contest) .pair{width:calc(100% * var(--scale,1));
-                                                 margin-inline:auto}
+     is a row of two panes, so its width shrinks with the box.
+     .square is the opposite case (compare/rank/contest), so this is everything else. */
+  .grid:not(.square) .pair{width:calc(100% * var(--scale,1)); margin-inline:auto}
   /* Every pane carries the aspect ratio of the note AS DISPLAYED, in --ar and
      aspect-ratio. Sizing one axis is then enough, in any of the layouts below. */
   /* container-type: the hover caption scales with the pane, which ranges from a thumbnail
@@ -162,10 +210,10 @@
      box (--turn-top, its centre offset within the figure) rather than on 50% of the figure. */
   figure{position:relative}
   .turnbtn{position:absolute; left:50%; top:var(--turn-top,50%); translate:-50% -50%; z-index:3;
-           width:38px; height:38px;
+           width:var(--s-10); height:var(--s-10);
            display:grid; place-items:center; border:0; border-radius:50%; padding:0;
            background:rgba(10,12,16,.6); backdrop-filter:blur(2px);
-           color:#fff; font:22px/1 system-ui; cursor:pointer;
+           color:#fff; font:var(--s-5)/1 system-ui; cursor:pointer;
            opacity:0; transition:opacity .18s}
   /* Keyboard users never hover, so focus has to reveal it too. */
   figure:hover .turnbtn, .turnbtn:focus-visible{opacity:1}
@@ -184,78 +232,70 @@
      (100% - gap)/2/AR long. --ar-portrait is that limiting portrait ratio, set from JS
      (the proposals do not share one aspect ratio, so it cannot be a constant here); the
      fallback is the nominal euro format for the moment before the images have loaded. */
-  .grid.cmp .pair,.grid.rank .pair,.grid.contest .pair{aspect-ratio:1; align-items:center;
-                                                       justify-content:center;
-                                                       --gap:1rem; gap:var(--gap);
-                                                       --long:calc((100% - var(--gap))/2
-                                                                   / var(--ar-portrait,.5169))}
-  .grid.cmp .pane,.grid.rank .pane,.grid.contest .pane{flex:0 0 auto;
-                                                       max-width:100%; max-height:100%}
+  /* .square is set alongside cmp/rank/contest from JS -- those three share this whole
+     block, and naming the shared behaviour once beats repeating the three-way list. */
+  .grid.square .pair{aspect-ratio:1; align-items:center; justify-content:center;
+                     --gap:var(--s-4); gap:var(--gap);
+                     --long:calc((100% - var(--gap))/2 / var(--ar-portrait,.5169))}
+  .grid.square .pane{flex:0 0 auto; max-width:100%; max-height:100%}
   /* Stacked: a landscape note's long edge is its width, so hold that to --long. Also cap
      the height at half the square (minus the gap), or a squarer note would fit the width
      but the two panes would not fit the square vertically. */
-  .grid.cmp .pair.two.h .pane,
-  .grid.rank .pair.two.h .pane,
-  .grid.contest .pair.two.h .pane{width:min(var(--long), 100%,
-                                            ((100% - var(--gap))/2) * var(--ar,1));
-                                  height:auto}
+  .grid.square .pair.two.h .pane{width:min(var(--long), 100%,
+                                           ((100% - var(--gap))/2) * var(--ar,1));
+                                 height:auto}
   /* Alongside: the two notes split the square's width. Two portrait notes at the full
      square height would need more width than the square has, so the pair limits them and
      they end up slightly smaller than landscape ones -- the gap above is what keeps that
      difference small. */
-  .grid.cmp .pair.two.v .pane,
-  .grid.rank .pair.two.v .pane,
-  .grid.contest .pair.two.v .pane{width:calc((100% - var(--gap))/2)}
+  .grid.square .pair.two.v .pane{width:calc((100% - var(--gap))/2)}
   /* single side: fit the note into the square by its longer edge, held to the same --long
      budget so one-sided cards match the two-sided ones. */
-  .grid.cmp .pair.one .pane,
-  .grid.rank .pair.one .pane,
-  .grid.contest .pair.one .pane{width:calc(var(--long) * min(1, var(--ar,1)))}
+  .grid.square .pair.one .pane{width:calc(var(--long) * min(1, var(--ar,1)))}
 
-  figcaption{padding:14px 0 0; display:flex; justify-content:center;
-             align-items:baseline; gap:8px; color:var(--fg-dim);
-             font-size:13px; letter-spacing:.4px;}
+  figcaption{padding:var(--s-4) 0 0; display:flex; justify-content:center;
+             align-items:baseline; gap:var(--s-2); color:var(--fg-dim);
+             font-size:var(--fs-sm); letter-spacing:.4px}
   figcaption b{font-weight:500}
 
   /* Contest: two candidates side by side, each a normal note box plus a vote button.
-     Below 700px they stack, so a note is never squeezed to thumbnail size on a phone. */
+     Below 700px they stack, so a note is never squeezed to thumbnail size on a phone.
+     1100px is a layout ceiling tied to the note grid, not to text, so it stays in px. */
   .grid.contest{grid-template-columns:repeat(2,1fr); max-width:1100px; margin:0 auto}
   @media (max-width:700px){ .grid.contest{grid-template-columns:1fr} }
-  .grid.contest figcaption{flex-direction:column; align-items:stretch; gap:14px}
-  /* Same chrome and fill-on-hover as .tab, so the vote reads as the same kind of control;
-     only the sizing differs, it spans the candidate's column. */
-  .vote{appearance:none; border:1px solid var(--line); border-radius:6px;
-        background:var(--tab-bg); color:var(--fg-dim);
-        padding:11px 14px; font:500 14px/1 system-ui; cursor:pointer;
-        width:100%; transition:.12s}
-  .vote:hover{background:var(--accent); border-color:var(--accent); color:#fff}
+  .grid.contest figcaption{flex-direction:column; align-items:stretch; gap:var(--s-4)}
+  /* Chrome and hover come from the shared control rule above; the vote only differs in
+     sizing -- it spans the candidate's column. */
+  .vote{padding:var(--s-3) var(--s-4); font:500 var(--fs-md)/1 system-ui; width:100%}
   .vote small{color:var(--fg-dim)}
   .vote:hover small{color:#fff}
 
   .grid.rank{grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); max-width:1100px;
-             margin:22px auto 0}
+             margin:var(--s-6) auto 0}
   .grid.rank figure{position:relative}
   .grid.rank figure.link{cursor:pointer}
   .grid.rank figure.link:hover figcaption{color:var(--accent)}
-  .grid.rank .pos{position:absolute; left:0; top:-22px; z-index:2;
-                  font:600 13px/1 system-ui; color:var(--fg-dim)}
+  .grid.rank .pos{position:absolute; left:0; top:calc(var(--s-6) * -1); z-index:2;
+                  font:600 var(--fs-sm)/1 system-ui; color:var(--fg-dim)}
   .grid.rank figure.first .pos{color:var(--accent-2)}
-  .btnrow{display:flex; gap:18px; flex-wrap:wrap; margin-top:14px}
+  .btnrow{display:flex; gap:var(--s-5); flex-wrap:wrap; margin-top:var(--s-4)}
   .btn{appearance:none; border:0; background:none; color:var(--accent);
-       padding:0; font:inherit; font-size:13px; cursor:pointer}
+       padding:0; font:inherit; font-size:var(--fs-sm); cursor:pointer}
   .btn:hover{text-decoration:underline}
 
+  /* Viewport units below are deliberate: the lightbox sizes to the screen, not the scale. */
   #lightbox{position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.93);
             display:none; align-items:center; justify-content:center; flex-direction:column;
-            gap:12px; padding:24px}
+            gap:var(--s-3); padding:var(--s-6)}
   #lightbox.on{display:flex}
   #lightbox img{max-width:96vw; max-height:84vh; object-fit:contain}
   /* rotated note: swap the viewport constraints, the on-screen axes are swapped too */
   #lightbox img.rot{max-width:84vh; max-height:96vw; transform:rotate(90deg)}
-  #lightbox .cap{color:#ddd; font-size:14px}
-  #lightbox .close{position:absolute; top:14px; right:20px; color:#ddd; font-size:28px;
-                   cursor:pointer; line-height:1}
-  .hint{color:var(--fg-dim); font-size:12px; line-height:1.9; margin-top:72px}
+  #lightbox .cap{color:#ddd; font-size:var(--fs-md)}
+  #lightbox .close{position:absolute; top:var(--s-4); right:var(--s-5); color:#ddd;
+                   font-size:var(--fs-xl); cursor:pointer; line-height:1}
+  .hint{color:var(--fg-dim); font-size:var(--fs-xs); line-height:1.9;
+        margin-top:var(--s-16)}
   .hint a{color:inherit}
   /* Keyboard shortcuts are noise without a keyboard. Keyed to the pointer, not the
      viewport: a small laptop window has one, a large tablet does not. */
@@ -270,11 +310,11 @@
     .grid{--cols:1}
   }
   @media (max-width:767px){
-    header{padding:14px 20px 12px}
-    main{padding:20px 20px 60px}
-    .grid{gap:40px 24px}
+    header{padding:var(--s-3) var(--s-5) var(--s-3)}
+    main{padding:var(--s-5) var(--s-5) var(--s-16)}
+    .grid{gap:var(--s-10) var(--s-6)}
   }
-  kbd{color:var(--fg); font:12px/1.4 ui-monospace,monospace}
+  kbd{color:var(--fg); font:var(--fs-xs)/1.4 ui-monospace,monospace}
 </style>
 </head>
 <body>
@@ -510,6 +550,9 @@ function show(key){
   grid.innerHTML = ""; meta.innerHTML = "";
   grid.classList.toggle("cmp", key === "cmp");
   grid.classList.remove("contest", "rank");
+  // .square: cmp, rank and contest all lay their cards out as squares (see the CSS).
+  // Set here for cmp; the rank and contest views add it with their own class.
+  grid.classList.toggle("square", key === "cmp");
   const f = $("#filter").value;
 
   if(key === "contest") return showContest();
@@ -517,7 +560,7 @@ function show(key){
   if(key === "cmp"){
     meta.innerHTML = `<h2>All proposals side by side</h2>
       <p>The same denomination across all ten proposals.
-      <label class="ctl" style="display:inline-flex;margin-left:10px">Denomination
+      <label class="ctl inline">Denomination
         <select id="cmpD">${DENOMS.map(d=>`<option value="${d}"${d===cmpDenom?" selected":""}>${d}</option>`).join("")}</select>
       </label></p>`;
     $("#cmpD").onchange = e => { cmpDenom = +e.target.value; show("cmp"); };
@@ -632,7 +675,7 @@ function showRanking(rank, shared){
     catch(err){ location.hash = "contest=" + rank.join(""); e.target.textContent = "Link in address bar"; }
   };
 
-  grid.classList.add("rank");
+  grid.classList.add("rank", "square");
   rank.forEach((L,i) => {
     const fig = noteBox(L, 5, "all", true);
     if(i === 0) fig.classList.add("first");
@@ -668,12 +711,12 @@ function showContest(){
   meta.innerHTML = `<h2>Which one do you prefer?</h2>
     <p>Comparison ${contest.votes + 1}<span class="keys"> ·
        <kbd>1</kbd>/<kbd>2</kbd> to vote</span>
-    <span class="btnrow" style="display:inline-flex;margin:0 0 0 10px">
+    <span class="btnrow inline">
       <button class="btn" id="cReset">Start over</button>
     </span></p>`;
   $("#cReset").onclick = () => { contest = newContest(); cSave(); show("contest"); };
 
-  grid.classList.add("contest");
+  grid.classList.add("contest", "square");
   // The candidates are deliberately unlabelled: the vote should go to the design,
   // not to a letter. The caption holds only the vote button.
   pair.forEach((L,i) => {
