@@ -1018,7 +1018,9 @@
         <kbd>0</kbd> compare view · <kbd>9</kbd> contest · <kbd>Esc</kbd> closes it ·
       </span>Click an image for the full-size view.<br>
       <b>Contest</b> finds your favourite by pairwise votes;
-      your votes stay in this browser and are sent nowhere.<br>
+      your votes stay in this browser and are sent nowhere.
+      The official vote is the ECB's own survey: <a href="https://surveys.ecb.europa.eu/10b/neweuro/"
+        target="_blank" rel="noopener">have your say there</a>.<br>
       An independent viewer, not affiliated with or endorsed by the ECB. <a
         href="https://github.com/felixfischer/euro-banknote-proposals" target="_blank" rel="noopener">Source on
         GitHub</a><br>
@@ -1061,6 +1063,7 @@
     const SRC_PAGE = "https://www.ecb.europa.eu/euro/banknotes/future_banknotes/html/design-proposals.en.html";
     // The real vote. This site only ever produces a personal ranking, so the result view
     // points here rather than letting anyone mistake a contest run for having voted.
+    // Also hard-coded in the .hint block below the grid -- change both.
     const ECB_SURVEY = "https://surveys.ecb.europa.eu/10b/neweuro/";
 
     const sideLabel = s => s === "front" ? "Front" : "Back";
@@ -1380,7 +1383,9 @@
        the ECB</a>.</p>
     <div class="btnrow">
       ${shared ? "" : `<button class="btn solid" id="cShare">Share my ranking</button>`}
-      <button class="btn" id="cAgain">${shared ? "Run my own contest" : "Run it again"}</button>
+      <!-- On a shared ranking this is the only thing to do here, so it carries the fill;
+           next to your own result it is the secondary action and share keeps it. -->
+      <button class="btn${shared ? " solid" : ""}" id="cAgain">${shared ? "Run my own contest" : "Run it again"}</button>
     </div>`;
       $("#cAgain").onclick = () => {
         history.replaceState(null, "", location.pathname + location.search);
