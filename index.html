@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
   <title>Compare New Euro Banknote Designs Side-by-Side</title>
   <meta name="description"
     content="A better way to explore the 10 new Euro banknote proposals. Comfortably view all denominations side-by-side, front and back, and vote for your favourite design.">
@@ -204,6 +204,13 @@
       transition: .12s
     }
 
+    /* Contest is the one thing here you *do*, not just look at, so it carries an accent
+     tint at rest. Declared before :hover/.active so those still win. */
+    .tab.spark {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
     .tab:hover,
     select:hover,
     .vote:hover {
@@ -237,13 +244,6 @@
 
     .tab.wide {
       padding: 0 var(--s-3)
-    }
-
-    /* Contest is the one thing here you *do*, not just look at, so it carries an accent
-     tint at rest. Declared before :hover/.active so those still win. */
-    .tab.spark {
-      border-color: var(--accent);
-      color: var(--accent)
     }
 
     .tab.active {
@@ -491,7 +491,13 @@
       flex: 1 1 0;
       min-width: 0;
       display: block;
-      container-type: inline-size
+      container-type: inline-size;
+      transition: transform .18s;
+    }
+
+    .pane:hover {
+      transform: scale(1.05);
+      z-index: 10;
     }
 
     /* Landscape pairs stack, so grow would inflate the pane boxes past the note's aspect
@@ -537,8 +543,7 @@
       justify-content: center;
       gap: .35em;
       text-align: center;
-      background: rgba(10, 12, 16, .55);
-      backdrop-filter: blur(2px);
+      background: rgba(255, 255, 255, .25);
       opacity: 0;
       transition: opacity .18s;
       pointer-events: none
@@ -550,20 +555,20 @@
 
     .lbl .l {
       font: 700 clamp(28px, 5vmin, 48px)/1 system-ui;
-      color: #fff;
+      color: #1a1d23;
       letter-spacing: .5px
     }
 
     .lbl .d {
       font: 400 clamp(13px, 2.4cqw, 18px)/1 system-ui;
-      color: #fff
+      color: #1a1d23
     }
 
     .lbl .s {
       font: 400 clamp(10px, 2.5vmin, 20px)/1 system-ui;
       letter-spacing: 1.4px;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, .5)
+      color: rgba(26, 29, 35, .7)
     }
 
     /* Turn a portrait pair on its side. Rotating alone would leave the pair's box at its
@@ -1019,8 +1024,8 @@
       </span>Click an image for the full-size view.<br>
       <b>Contest</b> finds your favourite by pairwise votes;
       your votes stay in this browser and are sent nowhere.
-      The official vote is the ECB's own survey: <a href="https://surveys.ecb.europa.eu/10b/neweuro/"
-        target="_blank" rel="noopener">have your say there</a>.<br>
+      The official vote is the ECB's own survey: <a href="https://surveys.ecb.europa.eu/10b/neweuro/" target="_blank"
+        rel="noopener">have your say there</a>.<br>
       An independent viewer, not affiliated with or endorsed by the ECB. <a
         href="https://github.com/felixfischer/euro-banknote-proposals" target="_blank" rel="noopener">Source on
         GitHub</a><br>
@@ -1158,8 +1163,7 @@
       img.onclick = () => openLB(img);
       const lbl = document.createElement("span");
       lbl.className = "lbl";
-      lbl.innerHTML = `<span class="s" style="font-weight:bold;">${d} €</span>` +
-        `<span class="l">${L}</span>` +
+      lbl.innerHTML = `<span class="l">${L}</span>` +
         `<span class="s">${sideLabel(side)}</span>`;
       p.append(img, lbl);
       return p;
@@ -1492,12 +1496,17 @@
     /* lightbox */
     const lb = $("#lightbox"), lbImg = $("#lbImg"), lbCap = $("#lbCap");
     function openLB(img) {
+      $("#viewport").content = "width=device-width, initial-scale=1";
       lbImg.classList.toggle("rot", img.parentElement.classList.contains("rot"));
       lbImg.src = img.currentSrc || img.src;
       lbCap.textContent = img.alt;
       lb.classList.add("on");
     }
-    function closeLB() { lb.classList.remove("on"); lbImg.src = ""; }
+    function closeLB() { 
+      $("#viewport").content = "width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no";
+      lb.classList.remove("on"); 
+      lbImg.src = ""; 
+    }
     // Anywhere in the lightbox closes it, the image included -- the × is a small target,
     // and there is nothing else in here to click.
     lb.onclick = closeLB;
