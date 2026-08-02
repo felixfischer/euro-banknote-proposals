@@ -1496,14 +1496,28 @@
     /* lightbox */
     const lb = $("#lightbox"), lbImg = $("#lbImg"), lbCap = $("#lbCap");
     function openLB(img) {
-      $("#viewport").content = "width=device-width, initial-scale=1";
+      let vp = $("#viewport");
+      if (vp) vp.remove();
+      vp = document.createElement("meta");
+      vp.id = "viewport";
+      vp.name = "viewport";
+      vp.content = "width=device-width, initial-scale=1";
+      document.head.appendChild(vp);
+
       lbImg.classList.toggle("rot", img.parentElement.classList.contains("rot"));
       lbImg.src = img.currentSrc || img.src;
       lbCap.textContent = img.alt;
       lb.classList.add("on");
     }
     function closeLB() { 
-      $("#viewport").content = "width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no";
+      let vp = $("#viewport");
+      if (vp) vp.remove();
+      vp = document.createElement("meta");
+      vp.id = "viewport";
+      vp.name = "viewport";
+      vp.content = "width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no";
+      document.head.appendChild(vp);
+
       lb.classList.remove("on"); 
       lbImg.src = ""; 
     }
